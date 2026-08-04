@@ -90,7 +90,7 @@ def process_upload(request_files, expected_extensions, max_files=1):
         
     saved_paths = []
     
-    # In some forms it's request.files.getlist('files'), in others request.files.get('file')
+    # In some forms it's request.files.getlist('files'), in others (request.files.get('file') or request.files.get('files'))
     # This standardizes to a list.
     if isinstance(request_files, list):
         files = request_files
@@ -304,9 +304,12 @@ def serve_tool_page(slug, lang=None):
     hreflangs = []
     hreflangs.append(f'<link rel="alternate" hreflang="x-default" href="{root_domain}/{slug}" />')
     hreflangs.append(f'<link rel="alternate" hreflang="en" href="{root_domain}/{slug}" />')
+    indian_langs_set = {'hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ur', 'pa', 'ml', 'or'}
     for l in SUPPORTED_LANGS:
         if l != 'en':
             hreflangs.append(f'<link rel="alternate" hreflang="{l}" href="{root_domain}/{l}/{slug}" />')
+            if l in indian_langs_set:
+                hreflangs.append(f'<link rel="alternate" hreflang="{l}-in" href="{root_domain}/{l}/{slug}" />')
             
     hreflang_tags = "\n    ".join(hreflangs)
     
@@ -388,7 +391,7 @@ def merge_pdfs():
 
 @app.route('/api/split', methods=['POST'])
 def split_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
 
@@ -476,7 +479,7 @@ def split_pdf():
 @app.route('/api/compress', methods=['POST'])
 def compress_pdf():
     try:
-        saved_paths = process_upload(request.files.get('file'), ['.pdf'])
+        saved_paths = process_upload((request.files.get('file') or request.files.get('files')), ['.pdf'])
         input_path = saved_paths[0]
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
@@ -550,7 +553,7 @@ def jpg_to_pdf():
 @app.route('/api/pdf_to_jpg', methods=['POST'])
 def pdf_to_jpg():
     try:
-        saved_paths = process_upload(request.files.get('file'), ['.pdf'])
+        saved_paths = process_upload((request.files.get('file') or request.files.get('files')), ['.pdf'])
         input_path = saved_paths[0]
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
@@ -582,7 +585,7 @@ def pdf_to_jpg():
 
 @app.route('/api/rotate', methods=['POST'])
 def rotate_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
 
@@ -620,7 +623,7 @@ def rotate_pdf():
 
 @app.route('/api/protect', methods=['POST'])
 def protect_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     password = request.form.get('password')
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
@@ -652,7 +655,7 @@ def protect_pdf():
 
 @app.route('/api/unlock', methods=['POST'])
 def unlock_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     password = request.form.get('password', '')
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
@@ -687,7 +690,7 @@ def unlock_pdf():
 
 @app.route('/api/watermark', methods=['POST'])
 def watermark_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     text = request.form.get('text', 'i loves pdf')
     try:
         opacity = float(request.form.get('opacity', 0.3))
@@ -752,7 +755,7 @@ def watermark_pdf():
 
 @app.route('/api/page_numbers', methods=['POST'])
 def add_page_numbers():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     position = request.form.get('position', 'bottom-right') # bottom-left, bottom-center, bottom-right, top-left, top-center, top-right
     try:
         start_num = int(request.form.get('start_number', 1))
@@ -828,7 +831,7 @@ def add_page_numbers():
 
 @app.route('/api/organize', methods=['POST'])
 def organize_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     order_str = request.form.get('order')  # comma-separated 0-based index list e.g. "0,2,1"
     rotations_str = request.form.get('rotations') # comma-separated angles e.g. "90,0,180"
     
@@ -882,7 +885,7 @@ def organize_pdf():
 @app.route('/api/word_to_pdf', methods=['POST'])
 def word_to_pdf():
     try:
-        saved_paths = process_upload(request.files.get('file'), ['.doc', '.docx'])
+        saved_paths = process_upload((request.files.get('file') or request.files.get('files')), ['.doc', '.docx'])
         input_path = saved_paths[0]
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
@@ -992,7 +995,7 @@ def word_to_pdf():
 @app.route('/api/pdf_to_word', methods=['POST'])
 def pdf_to_word():
     try:
-        saved_paths = process_upload(request.files.get('file'), ['.pdf'])
+        saved_paths = process_upload((request.files.get('file') or request.files.get('files')), ['.pdf'])
         input_path = saved_paths[0]
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
@@ -1026,7 +1029,7 @@ def pdf_to_word():
 
 @app.route('/api/html_to_pdf', methods=['POST'])
 def html_to_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     html_code = request.form.get('html_code', '')
 
     html_content = ""
@@ -1079,7 +1082,7 @@ def html_to_pdf():
 @app.route('/api/extract_text', methods=['POST'])
 def extract_text():
     try:
-        saved_paths = process_upload(request.files.get('file'), ['.pdf'])
+        saved_paths = process_upload((request.files.get('file') or request.files.get('files')), ['.pdf'])
         input_path = saved_paths[0]
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
@@ -1107,7 +1110,7 @@ def extract_text():
 
 @app.route('/api/delete_pages', methods=['POST'])
 def delete_pdf_pages():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     pages_str = request.form.get('pages', '')
     
     if not file or file.filename == '':
@@ -1199,7 +1202,7 @@ def add_header(response):
 
 @app.route('/api/powerpoint_to_pdf', methods=['POST'])
 def powerpoint_to_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PowerPoint file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pptx'))
@@ -1219,7 +1222,7 @@ def powerpoint_to_pdf():
 
 @app.route('/api/pdf_to_powerpoint', methods=['POST'])
 def pdf_to_powerpoint():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1239,7 +1242,7 @@ def pdf_to_powerpoint():
 
 @app.route('/api/excel_to_pdf', methods=['POST'])
 def excel_to_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'Excel file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('xlsx'))
@@ -1259,7 +1262,7 @@ def excel_to_pdf():
 
 @app.route('/api/pdf_to_excel', methods=['POST'])
 def pdf_to_excel():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1279,7 +1282,7 @@ def pdf_to_excel():
 
 @app.route('/api/pdf_to_pdfa', methods=['POST'])
 def pdf_to_pdfa():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1304,7 +1307,7 @@ def pdf_to_pdfa():
 
 @app.route('/api/repair_pdf', methods=['POST'])
 def repair_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1326,7 +1329,7 @@ def repair_pdf():
 
 @app.route('/api/ocr_pdf', methods=['POST'])
 def ocr_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1346,7 +1349,7 @@ def ocr_pdf():
 
 @app.route('/api/pdf_summarize', methods=['POST'])
 def pdf_summarize():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
     input_path = os.path.join(UPLOAD_FOLDER, get_unique_filename('pdf'))
@@ -1366,7 +1369,7 @@ def pdf_summarize():
 
 @app.route('/api/translate_pdf', methods=['POST'])
 def translate_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     target_lang = request.form.get('target_lang', 'es')
     if not file or file.filename == '':
         return jsonify({'error': 'PDF file is required.'}), 400
@@ -1387,7 +1390,7 @@ def translate_pdf():
 
 @app.route('/api/sign_pdf', methods=['POST'])
 def sign_pdf():
-    file = request.files.get('file')
+    file = (request.files.get('file') or request.files.get('files'))
     sig_b64 = request.form.get('signature_base64')
     try:
         page_idx = int(request.form.get('page_index', 0))
@@ -1458,7 +1461,136 @@ if __name__ == '__main__':
 # Master Multi-Language Translation Map
 DYNAMIC_LANG_MAP = {'es': {'title': 'i loves pdf | Herramientas PDF gratuitas en línea', 'h1': 'Todas las herramientas PDF que necesitas en un solo lugar', 'desc': 'Todas las herramientas PDF al alcance de tu mano. 100% GRATIS y fáciles de usar. Une, divide, comprime, convierte, rota, desbloquea y añade marcas de agua a tus archivos PDF con solo unos pocos clics.', 'all': 'Todos', 'org': 'Organizar PDF', 'opt': 'Optimizar PDF', 'conv': 'Convertir PDF', 'sec': 'Seguridad PDF', 'intel': 'Inteligencia PDF', 'merge': 'Unir PDF', 'split': 'Dividir PDF', 'compress': 'Comprimir PDF', 'w2p': 'Word a PDF', 'p2w': 'PDF a Word', 'p2pp': 'PDF a PowerPoint', 'p2ex': 'PDF a Excel', 'pp2p': 'PowerPoint a PDF', 'ex2p': 'Excel a PDF', 'j2p': 'JPG a PDF', 'p2j': 'PDF a JPG', 'rot': 'Rotar PDF', 'prot': 'Proteger PDF', 'unl': 'Desbloquear PDF', 'wm': 'Marca de agua', 'pn': 'Números de página', 'h2p': 'HTML a PDF', 'txt': 'Extraer texto', 'del': 'Eliminar páginas', 'pdfa': 'PDF a PDF/A', 'rep': 'Reparar PDF', 'ocr': 'OCR PDF', 'ai': 'Resumidor de IA', 'trans': 'Traducir PDF', 'sign': 'Firmar PDF', 'comp': 'Comparar PDF', 'login': 'Iniciar sesión', 'signup': 'Registrarse', 'home': 'Inicio', 'all_tools': 'Todas las herramientas PDF', 'convert_pdf': 'Convertir PDF'}, 'fr': {'title': 'i loves pdf | Outils PDF gratuits en ligne', 'h1': 'Tous les outils PDF dont vous avez besoin au même endroit', 'desc': 'Tous les outils PDF à portée de main. 100% GRATUITS et faciles à utiliser ! Fusionnez, divisez, compressez, convertissez, pivotez, déverrouillez et ajoutez un filigrane à vos PDFs en quelques clics.', 'all': 'Tous', 'org': 'Organiser PDF', 'opt': 'Optimiser PDF', 'conv': 'Convertir PDF', 'sec': 'Sécurité PDF', 'intel': 'Intelligence PDF', 'merge': 'Fusionner PDF', 'split': 'Diviser PDF', 'compress': 'Compresser PDF', 'w2p': 'Word en PDF', 'p2w': 'PDF en Word', 'p2pp': 'PDF en PowerPoint', 'p2ex': 'PDF en Excel', 'pp2p': 'PowerPoint en PDF', 'ex2p': 'Excel en PDF', 'j2p': 'JPG en PDF', 'p2j': 'PDF en JPG', 'rot': 'Pivoter PDF', 'prot': 'Protéger PDF', 'unl': 'Déverrouiller PDF', 'wm': 'Filigrane', 'pn': 'Numérotation', 'h2p': 'HTML en PDF', 'txt': 'Extraire le texte', 'del': 'Supprimer des pages', 'pdfa': 'PDF en PDF/A', 'rep': 'Réparer PDF', 'ocr': 'OCR PDF', 'ai': 'Résumeur IA', 'trans': 'Traduire PDF', 'sign': 'Signer PDF', 'comp': 'Comparer PDF', 'login': 'Connexion', 'signup': "S'inscrire", 'home': 'Accueil', 'all_tools': 'Tous les outils PDF', 'convert_pdf': 'Convertir PDF'}, 'de': {'title': 'i loves pdf | Kostenlose Online-PDF-Werkzeuge', 'h1': 'Jedes PDF-Werkzeug, das Sie benötigen, an einem Ort', 'desc': 'Alle PDF-Werkzeuge für Sie bereit. 100% KOSTENLOS und einfach zu bedienen! PDF-Dateien zusammenfügen, teilen, komprimieren, konvertieren, drehen, entsperren und Wasserzeichen hinzufügen.', 'all': 'Alle', 'org': 'PDF organisieren', 'opt': 'PDF optimieren', 'conv': 'PDF konvertieren', 'sec': 'PDF-Sicherheit', 'intel': 'PDF-Intelligenz', 'merge': 'PDF zusammenfügen', 'split': 'PDF teilen', 'compress': 'PDF komprimieren', 'w2p': 'Word in PDF', 'p2w': 'PDF in Word', 'p2pp': 'PDF in PowerPoint', 'p2ex': 'PDF in Excel', 'pp2p': 'PowerPoint in PDF', 'ex2p': 'Excel in PDF', 'j2p': 'JPG in PDF', 'p2j': 'PDF in JPG', 'rot': 'PDF drehen', 'prot': 'PDF schützen', 'unl': 'PDF entsperren', 'wm': 'Wasserzeichen', 'pn': 'Seitenzahlen', 'h2p': 'HTML in PDF', 'txt': 'Text extrahieren', 'del': 'Seiten löschen', 'pdfa': 'PDF in PDF/A', 'rep': 'PDF reparieren', 'ocr': 'OCR PDF', 'ai': 'KI-Zusammenfassung', 'trans': 'PDF übersetzen', 'sign': 'PDF unterschreiben', 'comp': 'PDF vergleichen', 'login': 'Einloggen', 'signup': 'Registrieren', 'home': 'Startseite', 'all_tools': 'Alle PDF-Werkzeuge', 'convert_pdf': 'PDF konvertieren'}, 'pt': {'title': 'i loves pdf | Ferramentas PDF online gratuitas', 'h1': 'Todas as ferramentas PDF necessárias em um só lugar', 'desc': "Todas as ferramentas PDF ao seu alcance. 100% GRATUITAS e fáceis de usar! Mesclar, dividir, comprimir, converter, rotacionar, desbloquear e adicionar marcas d'água aos seus PDFs.", 'all': 'Todos', 'org': 'Organizar PDF', 'opt': 'Otimizar PDF', 'conv': 'Converter PDF', 'sec': 'Segurança PDF', 'intel': 'Inteligência PDF', 'merge': 'Mesclar PDF', 'split': 'Dividir PDF', 'compress': 'Comprimir PDF', 'w2p': 'Word para PDF', 'p2w': 'PDF para Word', 'p2pp': 'PDF para PowerPoint', 'p2ex': 'PDF para Excel', 'pp2p': 'PowerPoint para PDF', 'ex2p': 'Excel para PDF', 'j2p': 'JPG para PDF', 'p2j': 'PDF para JPG', 'rot': 'Rotacionar PDF', 'prot': 'Proteger PDF', 'unl': 'Desbloquear PDF', 'wm': "Marca d'água", 'pn': 'Números de página', 'h2p': 'HTML para PDF', 'txt': 'Extrair texto', 'del': 'Excluir páginas', 'pdfa': 'PDF para PDF/A', 'rep': 'Reparar PDF', 'ocr': 'OCR PDF', 'ai': 'Resumidor de IA', 'trans': 'Traduzir PDF', 'sign': 'Assinar PDF', 'comp': 'Comparar PDF', 'login': 'Entrar', 'signup': 'Cadastrar', 'home': 'Início', 'all_tools': 'Todas as ferramentas PDF', 'convert_pdf': 'Converter PDF'}, 'hi': {'title': 'i loves pdf | मुफ़्त ऑनलाइन पीडीएफ उपकरण', 'h1': 'पीडीएफ पर काम करने के लिए सभी आवश्यक उपकरण एक जगह', 'desc': 'आपकी उंगलियों पर सभी पीडीएफ उपकरण। 100% मुफ़्त और उपयोग में आसान! कुछ ही क्लिक में पीडीएफ़ को मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट, रोटेट, अनलॉक और वॉटरमार्क करें।', 'all': 'सभी', 'org': 'पीडीएफ व्यवस्थित करें', 'opt': 'पीडीएफ ऑप्टिमाइज़ करें', 'conv': 'पीडीएफ कन्वर्ट करें', 'sec': 'पीडीएफ सुरक्षा', 'intel': 'पीडीएफ इंटेलिजेंस', 'merge': 'पीडीएफ मर्ज करें', 'split': 'पीडीएफ विभाजित करें', 'compress': 'पीडीएफ कंप्रेस करें', 'w2p': 'वर्ड से पीडीएफ', 'p2w': 'पीडीएफ से वर्ड', 'p2pp': 'पीडीएफ से पावरपॉइंट', 'p2ex': 'पीडीएफ से एक्सेल', 'pp2p': 'पावरपॉइंट से पीडीएफ', 'ex2p': 'एक्सेल से पीडीएफ', 'j2p': 'जेपीजी से पीडीएफ', 'p2j': 'पीडीएफ से जेपीजी', 'rot': 'पीडीएफ घुमाएँ', 'prot': 'पीडीएफ सुरक्षित करें', 'unl': 'पीडीएफ अनलॉक करें', 'wm': 'वॉटरमार्क', 'pn': 'पेज नंबर', 'h2p': 'एचटीएमएल से पीडीएफ', 'txt': 'टेक्स्ट निकालें', 'del': 'पेजएं हटाएं', 'pdfa': 'पीडीएफ से पीडीएफ/ए', 'rep': 'पीडीएफ रिपेयर करें', 'ocr': 'ओसीआर पीडीएफ', 'ai': 'एआई सारांश', 'trans': 'अनुवाद करें', 'sign': 'हस्ताक्षर करें', 'comp': 'पीडीएफ तुलना करें', 'login': 'लॉगिन', 'signup': 'साइन अप', 'home': 'होम', 'all_tools': 'सभी पीडीएफ टूल्स', 'convert_pdf': 'कन्वर्ट पीडीएफ'}, 'ar': {'title': 'i loves pdf | أدوات PDF مجانية عبر الإنترنت', 'h1': 'جميع أدوات PDF التي تحتاجها في مكان واحد', 'desc': 'جميع أدوات PDF بين يديك. مجانية 100% وسهلة الاستخدام! دمج وتقسيم وضغط وتحويل وتدوير وحماية وحذف صفحات PDF بنقرات قليلة.', 'all': 'الكل', 'org': 'تنظيم PDF', 'opt': 'تحسين PDF', 'conv': 'تحويل PDF', 'sec': 'أمان PDF', 'intel': 'ذكاء PDF', 'merge': 'دمج PDF', 'split': 'تقسيم PDF', 'compress': 'ضغط PDF', 'w2p': 'Word إلى PDF', 'p2w': 'PDF إلى Word', 'p2pp': 'PDF إلى PowerPoint', 'p2ex': 'PDF إلى Excel', 'pp2p': 'PowerPoint إلى PDF', 'ex2p': 'Excel إلى PDF', 'j2p': 'JPG إلى PDF', 'p2j': 'PDF إلى JPG', 'rot': 'تدوير PDF', 'prot': 'حماية PDF', 'unl': 'فتح PDF', 'wm': 'علامة مائية', 'pn': 'أرقام الصفحات', 'h2p': 'HTML إلى PDF', 'txt': 'استخراج النص', 'del': 'حذف الصفحات', 'pdfa': 'PDF إلى PDF/A', 'rep': 'إصلاح PDF', 'ocr': 'التعرف الضوئي', 'ai': 'ملخص الذكاء الاصطناعي', 'trans': 'ترجمة PDF', 'sign': 'توقيع PDF', 'comp': 'مقارنة PDF', 'login': 'تسجيل الدخول', 'signup': 'إنشاء حساب', 'home': 'الرئيسية', 'all_tools': 'جميع أدوات PDF', 'convert_pdf': 'تحويل PDF'}, 'zh': {'title': 'i loves pdf | 免费在线 PDF 工具', 'h1': '您在一个地方所需的所有 PDF 工具', 'desc': '所有 PDF 工具触手可及。100% 免费且易于使用！只需点击几下即可合并、拆分、压缩、转换、旋转、解锁和加水印 PDF。', 'all': '全部', 'org': '组织 PDF', 'opt': '优化 PDF', 'conv': '转换 PDF', 'sec': 'PDF 安全', 'intel': 'PDF 智能', 'merge': '合并 PDF', 'split': '拆分 PDF', 'compress': '压缩 PDF', 'w2p': 'Word 转 PDF', 'p2w': 'PDF 转 Word', 'p2pp': 'PDF 转 PowerPoint', 'p2ex': 'PDF 转 Excel', 'pp2p': 'PowerPoint 转 PDF', 'ex2p': 'Excel 转 PDF', 'j2p': 'JPG 转 PDF', 'p2j': 'PDF 转 JPG', 'rot': '旋转 PDF', 'prot': '加密 PDF', 'unl': '解密 PDF', 'wm': '添加水印', 'pn': '添加页码', 'h2p': 'HTML 转 PDF', 'txt': '提取文本', 'del': '删除页面', 'pdfa': 'PDF 转 PDF/A', 'rep': '修复 PDF', 'ocr': 'OCR 识别', 'ai': 'AI 摘要', 'trans': '翻译 PDF', 'sign': '电子签名', 'comp': '对比 PDF', 'login': '登录', 'signup': '注册', 'home': '首页', 'all_tools': '所有 PDF 工具', 'convert_pdf': '转换 PDF'}, 'ja': {'title': 'i loves pdf | 無料のオンライン PDF ツール', 'h1': 'PDFの作業に必要なすべてのツールを1箇所に', 'desc': 'すべてのPDFツールが手元に。100%無料で使いやすい！数クリックでPDFの結合、分割、圧縮、変換、回転、保護解除が可能です。', 'all': 'すべて', 'org': 'PDF 整理', 'opt': 'PDF 最適化', 'conv': 'PDF 変換', 'sec': 'PDF セキュリティ', 'intel': 'PDF インテリジェンス', 'merge': 'PDF 結合', 'split': 'PDF 分割', 'compress': 'PDF 圧縮', 'w2p': 'Word から PDF', 'p2w': 'PDF から Word', 'p2pp': 'PDF から PowerPoint', 'p2ex': 'PDF から Excel', 'pp2p': 'PowerPoint から PDF', 'ex2p': 'Excel から PDF', 'j2p': 'JPG から PDF', 'p2j': 'PDF から JPG', 'rot': 'PDF 回転', 'prot': 'PDF 保護', 'unl': 'PDF ロック解除', 'wm': '透かし追加', 'pn': 'ページ番号', 'h2p': 'HTML から PDF', 'txt': 'テキスト抽出', 'del': 'ページ削除', 'pdfa': 'PDF から PDF/A', 'rep': 'PDF 修復', 'ocr': 'OCR 処理', 'ai': 'AI 要約', 'trans': 'PDF 翻訳', 'sign': 'PDF 署名', 'comp': 'PDF 比較', 'login': 'ログイン', 'signup': '新規登録', 'home': 'ホーム', 'all_tools': 'すべての PDF ツール', 'convert_pdf': 'PDF 変換'}, 'ru': {'title': 'i loves pdf | Бесплатные онлайн-инструменты PDF', 'h1': 'Все инструменты PDF, необходимые для работы, в одном месте', 'desc': 'Все инструменты PDF у вас под рукой. 100% БЕСПЛАТНО и просто в использовании! Объединяйте, разделяйте, сжимайте, конвертируйте, поворачивайте и защищайте PDF в несколько кликов.', 'all': 'Все', 'org': 'Упорядочить PDF', 'opt': 'Оптимизировать PDF', 'conv': 'Конвертировать PDF', 'sec': 'Безопасность PDF', 'intel': 'Интеллект PDF', 'merge': 'Объединить PDF', 'split': 'Разделить PDF', 'compress': 'Сжать PDF', 'w2p': 'Word в PDF', 'p2w': 'PDF в Word', 'p2pp': 'PDF в PowerPoint', 'p2ex': 'PDF в Excel', 'pp2p': 'PowerPoint в PDF', 'ex2p': 'Excel в PDF', 'j2p': 'JPG в PDF', 'p2j': 'PDF в JPG', 'rot': 'Повернуть PDF', 'prot': 'Защитить PDF', 'unl': 'Снять защиту PDF', 'wm': 'Водяной знак', 'pn': 'Номера страниц', 'h2p': 'HTML в PDF', 'txt': 'Извлечь текст', 'del': 'Удалить страницы', 'pdfa': 'PDF в PDF/A', 'rep': 'Восстановить PDF', 'ocr': 'Распознавание OCR', 'ai': 'ИИ Суммаризатор', 'trans': 'Перевести PDF', 'sign': 'Подписать PDF', 'comp': 'Сравнить PDF', 'login': 'Войти', 'signup': 'Регистрация', 'home': 'Главная', 'all_tools': 'Все инструменты PDF', 'convert_pdf': 'Конвертировать PDF'}, 'it': {'title': 'i loves pdf | Strumenti PDF online gratuiti', 'h1': 'Tutti gli strumenti PDF di cui hai bisogno in un unico posto', 'desc': 'Tutti gli strumenti PDF a portata di mano. 100% GRATUITI e facili da usare! Unisci, dividi, comprimi, converti, ruota e sblocca i tuoi PDF in pochi clic.', 'all': 'Tutti', 'org': 'Organizza PDF', 'opt': 'Ottimizza PDF', 'conv': 'Converti PDF', 'sec': 'Sicurezza PDF', 'intel': 'Intelligenza PDF', 'merge': 'Unisci PDF', 'split': 'Dividi PDF', 'compress': 'Comprimi PDF', 'w2p': 'Da Word a PDF', 'p2w': 'Da PDF a Word', 'p2pp': 'Da PDF a PowerPoint', 'p2ex': 'Da PDF ad Excel', 'pp2p': 'Da PowerPoint a PDF', 'ex2p': 'Da Excel a PDF', 'j2p': 'Da JPG a PDF', 'p2j': 'Da PDF a JPG', 'rot': 'Ruota PDF', 'prot': 'Proteggi PDF', 'unl': 'Sblocca PDF', 'wm': 'Filigrana', 'pn': 'Numeri di pagina', 'h2p': 'Da HTML a PDF', 'txt': 'Estrai testo', 'del': 'Elimina pagine', 'pdfa': 'Da PDF a PDF/A', 'rep': 'Ripara PDF', 'ocr': 'OCR PDF', 'ai': 'Riepilogo IA', 'trans': 'Traduci PDF', 'sign': 'Firma PDF', 'comp': 'Confronta PDF', 'login': 'Accedi', 'signup': 'Registrati', 'home': 'Home', 'all_tools': 'Tutti gli strumenti PDF', 'convert_pdf': 'Converti PDF'}}
 
+INDIAN_LANGS = {
+    'hi': {
+        'title': 'i loves pdf | मुफ़्त ऑनलाइन पीडीएफ उपकरण (भारत)', 
+        'h1': 'पीडीएफ पर काम करने के लिए सभी आवश्यक उपकरण एक जगह', 
+        'desc': 'आपकी उंगलियों पर सभी पीडीएफ उपकरण। 100% मुफ़्त और उपयोग में आसान! भारत में कुछ ही क्लिक में पीडीएफ़ को मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट, रोटेट, अनलॉक और वॉटरमार्क करें।', 
+        'all': 'सभी', 'org': 'पीडीएफ व्यवस्थित करें', 'opt': 'पीडीएफ ऑप्टिमाइज़ करें', 'conv': 'पीडीएफ कन्वर्ट करें', 'sec': 'पीडीएफ सुरक्षा', 'intel': 'पीडीएफ इंटेलिजेंस', 
+        'merge': 'पीडीएफ मर्ज करें', 'split': 'पीडीएफ विभाजित करें', 'compress': 'पीडीएफ कंप्रेस करें', 'w2p': 'वर्ड से पीडीएफ', 'p2w': 'पीडीएफ से वर्ड', 'p2pp': 'पीडीएफ से पावरपॉइंट', 
+        'p2ex': 'पीडीएफ से एक्सेल', 'pp2p': 'पावरपॉइंट से पीडीएफ', 'ex2p': 'एक्सेल से पीडीएफ', 'j2p': 'जेपीजी से पीडीएफ', 'p2j': 'पीडीएफ से जेपीजी', 'rot': 'पीडीएफ घुमाएँ', 
+        'prot': 'पीडीएफ सुरक्षित करें', 'unl': 'पीडीएफ अनलॉक करें', 'wm': 'वॉटरमार्क', 'pn': 'पेज नंबर', 'h2p': 'एचटीएमएल से पीडीएफ', 'txt': 'टेक्स्ट निकालें', 'del': 'पेज हटाएं', 
+        'pdfa': 'पीडीएफ से पीडीएफ/ए', 'rep': 'पीडीएफ रिपेयर करें', 'ocr': 'ओसीआर पीडीएफ', 'ai': 'एआई सारांश', 'trans': 'अनुवाद करें', 'sign': 'हस्ताक्षर करें', 'comp': 'पीडीएफ तुलना करें', 
+        'login': 'लॉगिन', 'signup': 'साइन अप', 'home': 'होम', 'all_tools': 'सभी पीडीएफ टूल्स', 'convert_pdf': 'कन्वर्ट पीडीएफ'
+    },
+    'bn': {
+        'title': 'i loves pdf | বিনামূল্যে অনলাইন পিডিএফ টুলস (ভারত)', 
+        'h1': 'আপনার প্রয়োজনীয় সমস্ত পিডিএফ টুলস এক জায়গায়', 
+        'desc': 'আপনার নখদর্পণে সমস্ত পিডিএফ টুলস। ১০০% বিনামূল্যে এবং সহজে ব্যবহারযোগ্য! ভারতে মাত্র কয়েকটি ক্লিকে পিডিএফ মার্জ, স্প্লিট, কম্প্রেস, রূপান্তর, আনলক করুন।', 
+        'all': 'সব', 'org': 'পিডিএফ সাজান', 'opt': 'পিডিএফ অপ্টিমাইজ করুন', 'conv': 'পিডিএফ রূপান্তর', 'sec': 'পিডিএফ নিরাপত্তা', 'intel': 'পিডিএফ বুদ্ধিমত্তা', 
+        'merge': 'পিডিএফ মার্জ করুন', 'split': 'পিডিএফ স্প্লিট করুন', 'compress': 'পিডিএফ কম্প্রেস করুন', 'w2p': 'ওয়ার্ড থেকে পিডিএফ', 'p2w': 'পিডিএফ থেকে ওয়ার্ড', 'p2pp': 'পিডিএফ থেকে পাওয়ারপয়েন্ট', 
+        'p2ex': 'পিডিএফ থেকে এক্সেল', 'pp2p': 'পাওয়ারপয়েন্ট থেকে পিডিএফ', 'ex2p': 'এক্সেল থেকে পিডিএফ', 'j2p': 'জেপিজি থেকে পিডিএফ', 'p2j': 'পিডিএফ থেকে জেপিজি', 'rot': 'পিডিএফ ঘোরান', 
+        'prot': 'পিডিএফ সুরক্ষিত করুন', 'unl': 'পিডিএফ আনলক করুন', 'wm': 'ওয়াটারমার্ক', 'pn': 'পৃষ্ঠা নম্বর', 'h2p': 'এইচটিএমএল থেকে পিডিএফ', 'txt': 'টেক্সট বের করুন', 'del': 'পৃষ্ঠা মুছুন', 
+        'pdfa': 'পিডিএফ থেকে পিডিএফ/এ', 'rep': 'পিডিএফ মেরামত করুন', 'ocr': 'ওসিআর পিডিএফ', 'ai': 'এআই সারাংশ', 'trans': 'পিডিএফ অনুবাদ করুন', 'sign': 'পিডিএফ স্বাক্ষর করুন', 'comp': 'পিডিএফ তুলনা করুন', 
+        'login': 'লগইন', 'signup': 'নিবন্ধন করুন', 'home': 'হোম', 'all_tools': 'সমস্ত পিডিএফ টুলস', 'convert_pdf': 'পিডিএফ রূপান্তর করুন'
+    },
+    'ta': {
+        'title': 'i loves pdf | இலவச ஆன்லைன் PDF கருவிகள் (இந்தியா)', 
+        'h1': 'உங்களுக்குத் தேவையான அனைத்து PDF கருவிகளும் ஒரே இடத்தில்', 
+        'desc': 'உங்கள் விரல் நுனியில் அனைத்து PDF கருவிகள். 100% இலவசம் மற்றும் பயன்படுத்த எளிதானது! இந்தியாவில் PDF களை இணைக்கவும், பிரிக்கவும், சுருக்கவும், மாற்றவும்.', 
+        'all': 'அனைத்தும்', 'org': 'PDF ஒழுங்கமைக்கவும்', 'opt': 'PDF மேம்படுத்தவும்', 'conv': 'PDF மாற்றவும்', 'sec': 'PDF பாதுகாப்பு', 'intel': 'PDF நுண்ணறிவு', 
+        'merge': 'PDF இணைக்கவும்', 'split': 'PDF பிரிக்கவும்', 'compress': 'PDF சுருக்கவும்', 'w2p': 'Word இல் இருந்து PDF', 'p2w': 'PDF இல் இருந்து Word', 'p2pp': 'PDF இல் இருந்து PowerPoint', 
+        'p2ex': 'PDF இல் இருந்து Excel', 'pp2p': 'PowerPoint இல் இருந்து PDF', 'ex2p': 'Excel இல் இருந்து PDF', 'j2p': 'JPG இல் இருந்து PDF', 'p2j': 'PDF இல் இருந்து JPG', 'rot': 'PDF சுழற்றவும்', 
+        'prot': 'PDF பாதுகாக்கவும்', 'unl': 'PDF திறக்கவும்', 'wm': 'வாட்டர்மார்க்', 'pn': 'பக்க எண்கள்', 'h2p': 'HTML இல் இருந்து PDF', 'txt': 'உரையைப் பிரித்தெடுக்கவும்', 'del': 'பக்கங்களை நீக்கவும்', 
+        'pdfa': 'PDF இல் இருந்து PDF/A', 'rep': 'PDF சரிசெய்யவும்', 'ocr': 'OCR PDF', 'ai': 'AI சுருக்கம்', 'trans': 'PDF மொழிபெயர்க்கவும்', 'sign': 'PDF கையொப்பமிடவும்', 'comp': 'PDF ஒப்பிடவும்', 
+        'login': 'உள்நுழைய', 'signup': 'பதிவு செய்க', 'home': 'முகப்பு', 'all_tools': 'அனைத்து PDF கருவிகள்', 'convert_pdf': 'PDF மாற்றவும்'
+    },
+    'te': {
+        'title': 'i loves pdf | ఉచిత ఆన్‌లైన్ PDF సాధనాలు (భారతదేశం)', 
+        'h1': 'మీకు కావలసిన అన్ని PDF సాధనాలు ఒకే చోట', 
+        'desc': 'మీ చేతివేళ్ల వద్ద అన్ని PDF సాధనాలు. 100% ఉచితం మరియు ఉపయోగించడానికి సులభం! భారతదేశంలో PDF లను విలీనం చేయండి, విభజించండి, కుదించండి మరియు మార్చండి.', 
+        'all': 'అన్నీ', 'org': 'PDF నిర్వహించండి', 'opt': 'PDF ఆప్టిమైజ్ చేయండి', 'conv': 'PDF మార్చండి', 'sec': 'PDF భద్రత', 'intel': 'PDF ఇంటెలిజెన్స్', 
+        'merge': 'PDF విలీనం చేయండి', 'split': 'PDF విభజించండి', 'compress': 'PDF కుదించండి', 'w2p': 'Word నుండి PDF', 'p2w': 'PDF నుండి Word', 'p2pp': 'PDF నుండి PowerPoint', 
+        'p2ex': 'PDF నుండి Excel', 'pp2p': 'PowerPoint నుండి PDF', 'ex2p': 'Excel నుండి PDF', 'j2p': 'JPG నుండి PDF', 'p2j': 'PDF నుండి JPG', 'rot': 'PDF తిప్పండి', 
+        'prot': 'PDF రక్షించండి', 'unl': 'PDF అన్‌లాక్ చేయండి', 'wm': 'వాటర్‌మార్క్', 'pn': 'పేజీ సంఖ్యలు', 'h2p': 'HTML నుండి PDF', 'txt': 'వచనాన్ని సంగ్రహించండి', 'del': 'పేజీలను తొలగించండి', 
+        'pdfa': 'PDF నుండి PDF/A', 'rep': 'PDF మరమ్మతు', 'ocr': 'OCR PDF', 'ai': 'AI సారాంశం', 'trans': 'PDF అనువదించండి', 'sign': 'PDF సంతకం చేయండి', 'comp': 'PDF సరిపోల్చండి', 
+        'login': 'లాగిన్', 'signup': 'సైన్ అప్', 'home': 'హోమ్', 'all_tools': 'అన్ని PDF సాధనాలు', 'convert_pdf': 'PDF మార్చండి'
+    },
+    'mr': {
+        'title': 'i loves pdf | मोफत ऑनलाइन पीडीएफ टूल्स (भारत)', 
+        'h1': 'तुम्हाला आवश्यक असलेली सर्व पीडीएफ टूल्स एकाच ठिकाणी', 
+        'desc': 'तुमच्या बोटांच्या टोकावर सर्व पीडीएफ टूल्स. 100% मोफत आणि वापरण्यास सोपे! भारतात पीडीएफ एकत्र करा, विभाजित करा, संकुचित करा आणि रूपांतरित करा.', 
+        'all': 'सर्व', 'org': 'पीडीएफ आयोजित करा', 'opt': 'पीडीएफ ऑप्टिमाइझ करा', 'conv': 'पीडीएफ रूपांतरित करा', 'sec': 'पीडीएफ सुरक्षा', 'intel': 'पीडीएफ बुद्धिमत्ता', 
+        'merge': 'पीडीएफ एकत्र करा', 'split': 'पीडीएफ विभाजित करा', 'compress': 'पीडीएफ संकुचित करा', 'w2p': 'वर्ड ते पीडीएफ', 'p2w': 'पीडीएफ ते वर्ड', 'p2pp': 'पीडीएफ ते पॉवरपॉइंट', 
+        'p2ex': 'पीडीएफ ते एक्सेल', 'pp2p': 'पॉवरपॉइंट ते पीडीएफ', 'ex2p': 'एक्सेल ते पीडीएफ', 'j2p': 'जेपीजी ते पीडीएफ', 'p2j': 'पीडीएफ ते जेपीजी', 'rot': 'पीडीएफ फिरवा', 
+        'prot': 'पीडीएफ सुरक्षित करा', 'unl': 'पीडीएफ अनलॉक करा', 'wm': 'वॉटरमार्क', 'pn': 'पृष्ठ क्रमांक', 'h2p': 'एचटीएमएल ते पीडीएफ', 'txt': 'मजकूर काढा', 'del': 'पृष्ठे हटवा', 
+        'pdfa': 'पीडीएफ ते पीडीएफ/ए', 'rep': 'पीडीएफ दुरुस्त करा', 'ocr': 'ओसीआर पीडीएफ', 'ai': 'एआय सारांश', 'trans': 'पीडीएफ भाषांतरित करा', 'sign': 'पीडीएफ स्वाक्षरी करा', 'comp': 'पीडीएफ तुलना करा', 
+        'login': 'लॉगिन', 'signup': 'साइन अप', 'home': 'होम', 'all_tools': 'सर्व पीडीएफ टूल्स', 'convert_pdf': 'पीडीएफ रूपांतरित करा'
+    },
+    'gu': {
+        'title': 'i loves pdf | મફત ઓનલાઈન પીડીએફ ટૂલ્સ (ભારત)', 
+        'h1': 'તમને જોઈતા તમામ પીડીએફ ટૂલ્સ એક જ જગ્યાએ', 
+        'desc': 'તમારી આંગળીના વેઢે તમામ પીડીએફ ટૂલ્સ. 100% મફત અને ઉપયોગમાં સરળ! ભારતમાં પીડીએફ મર્જ કરો, વિભાજીત કરો, સંકુચિત કરો અને કન્વર્ટ કરો.', 
+        'all': 'બધા', 'org': 'પીડીએફ ગોઠવો', 'opt': 'પીડીએફ ઓપ્ટિમાઇઝ કરો', 'conv': 'પીડીએફ કન્વર્ટ કરો', 'sec': 'પીડીએફ સુરક્ષા', 'intel': 'પીડીએફ બુદ્ધિ', 
+        'merge': 'પીડીએફ મર્જ કરો', 'split': 'પીડીએફ વિભાજીત કરો', 'compress': 'પીડીએફ સંકુચિત કરો', 'w2p': 'વર્ડ થી પીડીએફ', 'p2w': 'પીડીએફ થી વર્ડ', 'p2pp': 'પીડીએફ થી પાવરપોઈન્ટ', 
+        'p2ex': 'પીડીએફ થી એક્સેલ', 'pp2p': 'પાવરપોઈન્ટ થી પીડીએફ', 'ex2p': 'એક્સેલ થી પીડીએફ', 'j2p': 'જેપીજી થી પીડીએફ', 'p2j': 'પીડીએફ થી જેપીજી', 'rot': 'પીડીએફ ફેરવો', 
+        'prot': 'પીડીએફ સુરક્ષિત કરો', 'unl': 'પીડીએફ અનલૉક કરો', 'wm': 'વોટરમાર્ક', 'pn': 'પૃષ્ઠ નંબરો', 'h2p': 'એચટીએમએલ થી પીડીએફ', 'txt': 'ટેક્સ્ટ કાઢો', 'del': 'પૃષ્ઠો કાઢી નાખો', 
+        'pdfa': 'પીડીએફ થી પીડીએફ/એ', 'rep': 'પીડીએફ રિપેર કરો', 'ocr': 'ઓસીઆર પીડીએફ', 'ai': 'એઆઈ સારાંશ', 'trans': 'પીડીએફ અનુવાદ કરો', 'sign': 'પીડીએફ સહી કરો', 'comp': 'પીડીએફ સરખામણી કરો', 
+        'login': 'લોગિન', 'signup': 'સાઇન અપ', 'home': 'હોમ', 'all_tools': 'તમામ પીડીએફ ટૂલ્સ', 'convert_pdf': 'પીડીએફ કન્વર્ટ કરો'
+    },
+    'kn': {
+        'title': 'i loves pdf | ಉಚಿತ ಆನ್‌ಲೈನ್ PDF ಪರಿಕರಗಳು (ಭಾರತ)', 
+        'h1': 'ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಎಲ್ಲಾ PDF ಪರಿಕರಗಳು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ', 
+        'desc': 'ನಿಮ್ಮ ಬೆರಳ ತುದಿಯಲ್ಲಿ ಎಲ್ಲಾ PDF ಪರಿಕರಗಳು. 100% ಉಚಿತ ಮತ್ತು ಬಳಸಲು ಸುಲಭ! ಭಾರತದಲ್ಲಿ PDF ಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಿ, ವಿಭಜಿಸಿ, ಕುಗ್ಗಿಸಿ ಮತ್ತು ಪರಿವರ್ತಿಸಿ.', 
+        'all': 'ಎಲ್ಲಾ', 'org': 'PDF ಆಯೋಜಿಸಿ', 'opt': 'PDF ಆಪ್ಟಿಮೈಜ್ ಮಾಡಿ', 'conv': 'PDF ಪರಿವರ್ತಿಸಿ', 'sec': 'PDF ಭದ್ರತೆ', 'intel': 'PDF ಬುದ್ಧಿವಂತಿಕೆ', 
+        'merge': 'PDF ವಿಲೀನಗೊಳಿಸಿ', 'split': 'PDF ವಿಭಜಿಸಿ', 'compress': 'PDF ಕುಗ್ಗಿಸಿ', 'w2p': 'Word ನಿಂದ PDF', 'p2w': 'PDF ನಿಂದ Word', 'p2pp': 'PDF ನಿಂದ PowerPoint', 
+        'p2ex': 'PDF ನಿಂದ Excel', 'pp2p': 'PowerPoint ನಿಂದ PDF', 'ex2p': 'Excel ನಿಂದ PDF', 'j2p': 'JPG ನಿಂದ PDF', 'p2j': 'PDF ನಿಂದ JPG', 'rot': 'PDF ತಿರುಗಿಸಿ', 
+        'prot': 'PDF ರಕ್ಷಿಸಿ', 'unl': 'PDF ಅನ್‌ಲಾಕ್ ಮಾಡಿ', 'wm': 'ವಾಟರ್‌ಮಾರ್ಕ್', 'pn': 'ಪುಟ ಸಂಖ್ಯೆಗಳು', 'h2p': 'HTML ನಿಂದ PDF', 'txt': 'ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಿರಿ', 'del': 'ಪುಟಗಳನ್ನು ಅಳಿಸಿ', 
+        'pdfa': 'PDF ನಿಂದ PDF/A', 'rep': 'PDF ದುರಸ್ತಿ ಮಾಡಿ', 'ocr': 'OCR PDF', 'ai': 'AI ಸಾರಾಂಶ', 'trans': 'PDF ಭಾಷಾಂತರಿಸಿ', 'sign': 'PDF ಸಹಿ ಮಾಡಿ', 'comp': 'PDF ಹೋಲಿಕೆ ಮಾಡಿ', 
+        'login': 'ಲಾಗಿನ್', 'signup': 'ಸೈನ್ ಅಪ್', 'home': 'ಮುಖಪುಟ', 'all_tools': 'ಎಲ್ಲಾ PDF ಪರಿಕರಗಳು', 'convert_pdf': 'PDF ಪರಿವರ್ತಿಸಿ'
+    },
+    'ur': {
+        'title': 'i loves pdf | مفت آن لائن پی ڈی ایف ٹولز (بھارت)', 
+        'h1': 'آپ کی ضرورت کے تمام پی ڈی ایف ٹولز ایک ہی جگہ پر', 
+        'desc': 'آپ کی انگلیوں پر تمام پی ڈی ایف ٹولز۔ 100% مفت اور استعمال میں آسان! بھارت میں پی ڈی ایف کو ضم، تقسیم، کمپریس اور تبدیل کریں۔', 
+        'all': 'تمام', 'org': 'پی ڈی ایف کو منظم کریں', 'opt': 'پی ڈی ایف کو بہتر بنائیں', 'conv': 'پی ڈی ایف کو تبدیل کریں', 'sec': 'پی ڈی ایف سیکیورٹی', 'intel': 'پی ڈی ایف انٹیلی جنس', 
+        'merge': 'پی ڈی ایف ضم کریں', 'split': 'پی ڈی ایف تقسیم کریں', 'compress': 'پی ڈی ایف کمپریس کریں', 'w2p': 'ورڈ سے پی ڈی ایف', 'p2w': 'پی ڈی ایف سے ورڈ', 'p2pp': 'پی ڈی ایف سے پاورپوائنٹ', 
+        'p2ex': 'پی ڈی ایف سے ایکسل', 'pp2p': 'پاورپوائنٹ سے پی ڈی ایف', 'ex2p': 'ایکسل سے پی ڈی ایف', 'j2p': 'جے پی جی سے پی ڈی ایف', 'p2j': 'پی ڈی ایف سے جے پی جی', 'rot': 'پی ڈی ایف گھمائیں', 
+        'prot': 'پی ڈی ایف کو محفوظ بنائیں', 'unl': 'پی ڈی ایف ان لاک کریں', 'wm': 'واٹر مارک', 'pn': 'صفحہ نمبر', 'h2p': 'ایچ ٹی ایم ایل سے پی ڈی ایف', 'txt': 'متن نکالیں', 'del': 'صفحات حذف کریں', 
+        'pdfa': 'پی ڈی ایف سے پی ڈی ایف/اے', 'rep': 'پی ڈی ایف کی مرمت', 'ocr': 'او سی آر پی ڈی ایف', 'ai': 'اے آئی خلاصہ', 'trans': 'پی ڈی ایف کا ترجمہ کریں', 'sign': 'پی ڈی ایف پر دستخط کریں', 'comp': 'پی ڈی ایف کا موازنہ کریں', 
+        'login': 'لاگ ان', 'signup': 'سائن اپ', 'home': 'ہوم', 'all_tools': 'تمام پی ڈی ایف ٹولز', 'convert_pdf': 'پی ڈی ایف تبدیل کریں'
+    },
+    'pa': {
+        'title': 'i loves pdf | ਮੁਫ਼ਤ ਆਨਲਾਈਨ PDF ਟੂਲ (ਭਾਰਤ)', 
+        'h1': 'ਤੁਹਾਨੂੰ ਲੋੜੀਂਦੇ ਸਾਰੇ PDF ਟੂਲ ਇੱਕੋ ਥਾਂ \'ਤੇ', 
+        'desc': 'ਤੁਹਾਡੀਆਂ ਉਂਗਲਾਂ \'ਤੇ ਸਾਰੇ PDF ਟੂਲ। 100% ਮੁਫ਼ਤ ਅਤੇ ਵਰਤਣ ਵਿੱਚ ਆਸਾਨ! ਭਾਰਤ ਵਿੱਚ ਕੁਝ ਹੀ ਕਲਿੱਕਾਂ ਨਾਲ PDF ਨੂੰ ਮਿਲਾਓ, ਵੰਡੋ, ਕੰਪ੍ਰੈਸ ਕਰੋ ਅਤੇ ਬਦਲੋ।', 
+        'all': 'ਸਾਰੇ', 'org': 'PDF ਪ੍ਰਬੰਧਿਤ ਕਰੋ', 'opt': 'PDF ਅਨੁਕੂਲਿਤ ਕਰੋ', 'conv': 'PDF ਬਦਲੋ', 'sec': 'PDF ਸੁਰੱਖਿਆ', 'intel': 'PDF ਇੰਟੈਲੀਜੈਂਸ', 
+        'merge': 'PDF ਮਿਲਾਓ', 'split': 'PDF ਵੰਡੋ', 'compress': 'PDF ਕੰਪ੍ਰੈਸ ਕਰੋ', 'w2p': 'Word ਤੋਂ PDF', 'p2w': 'PDF ਤੋਂ Word', 'p2pp': 'PDF ਤੋਂ PowerPoint', 
+        'p2ex': 'PDF ਤੋਂ Excel', 'pp2p': 'PowerPoint ਤੋਂ PDF', 'ex2p': 'Excel ਤੋਂ PDF', 'j2p': 'JPG ਤੋਂ PDF', 'p2j': 'PDF ਤੋਂ JPG', 'rot': 'PDF ਘੁੰਮਾਓ', 
+        'prot': 'PDF ਸੁਰੱਖਿਅਤ ਕਰੋ', 'unl': 'PDF ਅਨਲੌਕ ਕਰੋ', 'wm': 'ਵਾਟਰਮਾਰਕ', 'pn': 'ਪੰਨਾ ਨੰਬਰ', 'h2p': 'HTML ਤੋਂ PDF', 'txt': 'ਟੈਕਸਟ ਕੱਢੋ', 'del': 'ਪੰਨੇ ਮਿਟਾਓ', 
+        'pdfa': 'PDF ਤੋਂ PDF/A', 'rep': 'PDF ਮੁਰੰਮਤ ਕਰੋ', 'ocr': 'OCR PDF', 'ai': 'AI ਸਾਰਾਂਸ਼', 'trans': 'PDF ਅਨੁਵਾਦ ਕਰੋ', 'sign': 'PDF ਦਸਤਖਤ ਕਰੋ', 'comp': 'PDF ਤੁਲਨਾ ਕਰੋ', 
+        'login': 'ਲਾਗਿਨ', 'signup': 'ਸਾਈਨ ਅੱਪ', 'home': 'ਹੋਮ', 'all_tools': 'ਸਾਰੇ PDF ਟੂਲ', 'convert_pdf': 'PDF ਬਦਲੋ'
+    },
+    'ml': {
+        'title': 'i loves pdf | സൗജന്യ ഓൺലൈൻ PDF ടൂളുകൾ (ഇന്ത്യ)', 
+        'h1': 'നിങ്ങൾക്ക് ആവശ്യമായ എല്ലാ PDF ടൂളുകളും ഒരിടത്ത്', 
+        'desc': 'നിങ്ങളുടെ വിരൽത്തുമ്പിൽ എല്ലാ PDF ടൂളുകളും. 100% സൗജന്യവും ഉപയോഗിക്കാൻ എളുപ്പവുമാണ്! ഇന്ത്യയിൽ PDF-കൾ ലയിപ്പിക്കുക, വിഭജിക്കുക, കംപ്രസ് ചെയ്യുക, പരിവർത്തനം ചെയ്യുക.', 
+        'all': 'എല്ലാം', 'org': 'PDF സംഘടിപ്പിക്കുക', 'opt': 'PDF ഒപ്റ്റിമൈസ് ചെയ്യുക', 'conv': 'PDF പരിവർത്തനം ചെയ്യുക', 'sec': 'PDF സുരക്ഷ', 'intel': 'PDF ഇന്റലിജൻസ്', 
+        'merge': 'PDF ലയിപ്പിക്കുക', 'split': 'PDF വിഭജിക്കുക', 'compress': 'PDF കംപ്രസ് ചെയ്യുക', 'w2p': 'Word-ൽ നിന്ന് PDF', 'p2w': 'PDF-ൽ നിന്ന് Word', 'p2pp': 'PDF-ൽ നിന്ന് PowerPoint', 
+        'p2ex': 'PDF-ൽ നിന്ന് Excel', 'pp2p': 'PowerPoint-ൽ നിന്ന് PDF', 'ex2p': 'Excel-ൽ നിന്ന് PDF', 'j2p': 'JPG-ൽ നിന്ന് PDF', 'p2j': 'PDF-ൽ നിന്ന് JPG', 'rot': 'PDF തിരിക്കുക', 
+        'prot': 'PDF സംരക്ഷിക്കുക', 'unl': 'PDF അൺലോക്ക് ചെയ്യുക', 'wm': 'വാട്ടർമാർക്ക്', 'pn': 'പേജ് നമ്പറുകൾ', 'h2p': 'HTML-ൽ നിന്ന് PDF', 'txt': 'വാചകം എക്‌സ്‌ട്രാക്‌റ്റ് ചെയ്യുക', 'del': 'പേജുകൾ ഇല്ലാതാക്കുക', 
+        'pdfa': 'PDF-ൽ നിന്ന് PDF/A', 'rep': 'PDF നന്നാക്കുക', 'ocr': 'OCR PDF', 'ai': 'AI സംഗ്രഹം', 'trans': 'PDF വിവർത്തനം ചെയ്യുക', 'sign': 'PDF ഒപ്പിടുക', 'comp': 'PDF താരതമ്യം ചെയ്യുക', 
+        'login': 'ലോഗിൻ', 'signup': 'സൈൻ അപ്പ്', 'home': 'ഹോം', 'all_tools': 'എല്ലാ PDF ടൂളുകളും', 'convert_pdf': 'PDF പരിവർത്തനം ചെയ്യുക'
+    },
+    'or': {
+        'title': 'i loves pdf | ମାଗଣା ଅନଲାଇନ୍ ପିଡିଏଫ୍ ଟୁଲ୍ସ (ଭାରତ)', 
+        'h1': 'ଆପଣଙ୍କର ସମସ୍ତ ପିଡିଏଫ୍ ଟୁଲ୍ ଗୋଟିଏ ସ୍ଥାନରେ', 
+        'desc': 'ଆପଣଙ୍କ ଆଙ୍ଗୁଠି ଅଗରେ ସମସ୍ତ ପିଡିଏଫ୍ ଟୁଲ୍। ୧୦୦% ମାଗଣା ଏବଂ ବ୍ୟବହାର କରିବାକୁ ସହଜ! ଭାରତରେ ପିଡିଏଫ୍ ମିଶ୍ରଣ, ବିଭାଜନ, ସଙ୍କୋଚନ ଏବଂ ରୂପାନ୍ତର କରନ୍ତୁ।', 
+        'all': 'ସମସ୍ତ', 'org': 'ପିଡିଏଫ୍ ସଜାନ୍ତୁ', 'opt': 'ପିଡିଏଫ୍ ଅପ୍ଟିମାଇଜ୍ କରନ୍ତୁ', 'conv': 'ପିଡିଏଫ୍ ରୂପାନ୍ତର କରନ୍ତୁ', 'sec': 'ପିଡିଏଫ୍ ସୁରକ୍ଷା', 'intel': 'ପିଡିଏଫ୍ ବୁଦ୍ଧିମତା', 
+        'merge': 'ପିଡିଏଫ୍ ମିଶ୍ରଣ କରନ୍ତୁ', 'split': 'ପିଡିଏଫ୍ ବିଭାଜନ କରନ୍ତୁ', 'compress': 'ପିଡିଏଫ୍ ସଙ୍କୋଚନ କରନ୍ତୁ', 'w2p': 'ୱାର୍ଡ ରୁ ପିଡିଏଫ୍', 'p2w': 'ପିଡିଏଫ୍ ରୁ ୱାର୍ଡ', 'p2pp': 'ପିଡିଏଫ୍ ରୁ ପାୱାରପଏଣ୍ଟ', 
+        'p2ex': 'ପିଡିଏଫ୍ ରୁ ଏକ୍ସେଲ', 'pp2p': 'ପାୱାରପଏଣ୍ଟ ରୁ ପିଡିଏଫ୍', 'ex2p': 'ଏକ୍ସେଲ ରୁ ପିଡିଏଫ୍', 'j2p': 'ଜେପିଜି ରୁ ପିଡିଏଫ୍', 'p2j': 'ପିଡିଏଫ୍ ରୁ ଜେପିଜି', 'rot': 'ପିଡିଏଫ୍ ଘୁରାନ୍ତୁ', 
+        'prot': 'ପିଡିଏଫ୍ ସୁରକ୍ଷିତ କରନ୍ତୁ', 'unl': 'ପିଡିଏଫ୍ ଅନଲକ୍ କରନ୍ତୁ', 'wm': 'ୱାଟରମାର୍କ', 'pn': 'ପୃଷ୍ଠା ସଂଖ୍ୟା', 'h2p': 'ଏଚଟିଏମଏଲ ରୁ ପିଡିଏଫ୍', 'txt': 'ଟେକ୍ସଟ ବାହାର କରନ୍ତୁ', 'del': 'ପୃଷ୍ଠା ହଟାନ୍ତୁ', 
+        'pdfa': 'ପିଡିଏଫ୍ ରୁ ପିଡିଏଫ୍/ଏ', 'rep': 'ପିଡିଏଫ୍ ମରାମତି କରନ୍ତୁ', 'ocr': 'ଓସିଆର ପିଡିଏଫ୍', 'ai': 'ଏଆଇ ସାରାଂଶ', 'trans': 'ପିଡିଏଫ୍ ଅନୁବାଦ କରନ୍ତୁ', 'sign': 'ପିଡିଏଫ୍ ସ୍ୱାକ୍ଷର କରନ୍ତୁ', 'comp': 'ପିଡିଏଫ୍ ତୁଳନା କରନ୍ତୁ', 
+        'login': 'ଲଗଇନ୍', 'signup': 'ସାଇନ୍ ଅପ୍', 'home': 'ହୋମ୍', 'all_tools': 'ସମସ୍ତ ପିଡିଏଫ୍ ଟୁଲ୍ସ', 'convert_pdf': 'ପିଡିଏଫ୍ ରୂପାନ୍ତର କରନ୍ତୁ'
+    }
+}
+
+DYNAMIC_LANG_MAP.update(INDIAN_LANGS)
+
 def apply_language_translations(html, lang):
+    # Fix relative CSS link injected by previous script so it works on nested routes like /es/merge
+    html = html.replace('href="./style.css', 'href="/style.css')
+    
     if not lang or lang == 'en':
         return html
         
@@ -1468,6 +1600,22 @@ def apply_language_translations(html, lang):
     t_dict = DYNAMIC_LANG_MAP.get(base_lang)
     if not t_dict:
         return html
+        
+    # Localize internal links (href="/...")
+    static_prefixes = ('favicon', 'apple', 'site.webmanifest', 'logo', 'ad-', 'style.css', 'api/', 'download/')
+    html = re.sub(
+        r'href="/([^"]*)"', 
+        lambda m: f'href="/{lang}/{m.group(1)}"' if not m.group(1).startswith(static_prefixes) else m.group(0), 
+        html
+    )
+    
+    # Localize inline JS navigation buttons (e.g., logo and Home buttons)
+    html = re.sub(
+        r'window\.location\.href=[\'"]\/[\'"]', 
+        f'window.location.href="/{lang}/"', 
+        html,
+        flags=re.IGNORECASE
+    )
         
     # Replace html lang tag
     html = re.sub(r'''<html\s+lang=["'][^"']*["']''', f'<html lang="{lang}"', html, flags=re.IGNORECASE)
@@ -1522,5 +1670,30 @@ def apply_language_translations(html, lang):
     
     for old_str, new_str in replacements:
         html = html.replace(old_str, new_str)
+        
+    # Advanced Regional SEO Schema Injection for Indian Languages
+    indian_langs = ['hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ur', 'pa', 'ml', 'or']
+    if base_lang in indian_langs:
+        schema = f"""<script type="application/ld+json">
+{{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "i loves pdfs",
+  "url": "https://ilovespdfs.in/{lang}/",
+  "inLanguage": "{lang}",
+  "description": "{t_dict.get('desc', '')}"
+}}
+</script>
+<script type="application/ld+json">
+{{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "i loves pdfs",
+  "areaServed": "IN",
+  "description": "{t_dict.get('desc', '')}",
+  "url": "https://ilovespdfs.in/{lang}/"
+}}
+</script>"""
+        html = re.sub(r'</head>', schema + '\n</head>', html, flags=re.IGNORECASE)
         
     return html
