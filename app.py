@@ -5,6 +5,7 @@ import zipfile
 import shutil
 import io
 import threading
+import re
 from flask import Flask, request, jsonify, send_file, send_from_directory, redirect, abort
 from pypdf import PdfReader, PdfWriter
 import fitz  # PyMuPDF
