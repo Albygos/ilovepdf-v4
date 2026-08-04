@@ -323,7 +323,7 @@ def serve_tool_page(slug, lang=None):
         for key in sorted_keys:
             html = html.replace(key, trans_dict[key])
             
-    return html
+    return apply_language_translations(html, lang)
 
 # Compatibility fallbacks
 @app.route('/merge')
