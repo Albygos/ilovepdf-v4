@@ -1603,12 +1603,16 @@ def apply_language_translations(html, lang):
         return html
         
     # Localize internal links (href="/...")
-    static_prefixes = ('favicon', 'apple', 'site.webmanifest', 'logo', 'ad-', 'style.css', 'api/', 'download/')
+    langs_prefixes = tuple(f"{l}/" for l in SUPPORTED_LANGS)
+    static_prefixes = ('favicon', 'apple', 'site.webmanifest', 'logo', 'ad-', 'style.css', 'api/', 'download/') + langs_prefixes
     html = re.sub(
         r'href="/([^"]*)"', 
         lambda m: f'href="/{lang}/{m.group(1)}"' if not m.group(1).startswith(static_prefixes) else m.group(0), 
         html
     )
+    
+    # Fix the English language switcher link which gets incorrectly prefixed
+    html = html.replace(f'<a href="/{lang}/">English</a>', '<a href="/">English</a>')
     
     # Localize inline JS navigation buttons (e.g., logo and Home buttons)
     html = re.sub(
