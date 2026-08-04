@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+uploads/
+processed/
+.DS_Store
+scratch_*
+
