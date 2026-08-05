@@ -1188,6 +1188,10 @@ def compare_pdf_redirect():
 def serve_robots():
     return send_from_directory(BASE_DIR, 'robots.txt', mimetype='text/plain')
 
+@app.route('/sitemap.xml')
+def serve_sitemap():
+    return send_from_directory(BASE_DIR, 'sitemap.xml', mimetype='application/xml')
+
 
 @app.after_request
 def add_header(response):
@@ -1587,6 +1591,8 @@ INDIAN_LANGS = {
 }
 
 DYNAMIC_LANG_MAP.update(INDIAN_LANGS)
+from other_langs import OTHER_LANGS
+DYNAMIC_LANG_MAP.update(OTHER_LANGS)
 
 def apply_language_translations(html, lang):
     # Fix relative CSS link injected by previous script so it works on nested routes like /es/merge
