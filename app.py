@@ -74,8 +74,12 @@ import traceback
 def get_unique_filename(ext):
     return f"{uuid.uuid4().hex}.{ext}"
 
+from werkzeug.exceptions import HTTPException
+
 @app.errorhandler(Exception)
 def handle_global_exception(e):
+    if isinstance(e, HTTPException):
+        return e
     traceback.print_exc()
     if isinstance(e, ValueError):
         return jsonify({'error': str(e)}), 400
@@ -275,12 +279,28 @@ def serve_tool_page(slug, lang=None):
         'page-numbers': 'add_pdf_page_number',
         'organize': 'organize-pdf',
         'delete-pages': 'remove-pages',
-        'compare': 'compare-pdf'
+        'compare': 'compare-pdf',
+        'html_to_pdf': 'html-to-pdf',
+        'extract_text': 'extract-text',
+        'remove_pages': 'remove-pages',
+        'compare_pdf': 'compare-pdf',
+        'powerpoint_to_pdf': 'powerpoint-to-pdf',
+        'pdf_to_powerpoint': 'pdf-to-powerpoint',
+        'excel_to_pdf': 'excel-to-pdf',
+        'pdf_to_excel': 'pdf-to-excel',
+        'repair_pdf': 'repair-pdf',
+        'ocr_pdf': 'ocr-pdf',
+        'translate_pdf': 'translate-pdf',
+        'sign_pdf': 'sign-pdf'
     }
     if slug in legacy_redirects:
-        target = legacy_redirects[slug]
-        url = f"/{lang}/{target}" if lang else f"/{target}"
-        return redirect(url, code=301)
+        try:
+            target = legacy_redirects[slug]
+            url = f"/{lang}/{target}" if lang else f"/{target}"
+            return redirect(url, code=301)
+        except Exception as e:
+            import traceback
+            return traceback.format_exc(), 500
 
     filename = SLUG_TO_FILE.get(slug)
     if not filename:
