@@ -1215,8 +1215,10 @@ def serve_robots():
     return send_from_directory(BASE_DIR, 'robots.txt', mimetype='text/plain')
 
 @app.route('/sitemap.xml')
-def serve_sitemap():
-    return send_from_directory(BASE_DIR, 'sitemap.xml', mimetype='application/xml')
+@app.route('/sitemap-<path:suffix>.xml')
+def serve_sitemap(suffix=None):
+    filename = f'sitemap-{suffix}.xml' if suffix else 'sitemap.xml'
+    return send_from_directory(BASE_DIR, filename, mimetype='application/xml')
 
 
 @app.after_request
