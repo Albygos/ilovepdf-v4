@@ -32,7 +32,7 @@ if __name__ == '__main__':
         print(f"Status: {res.status_code}, Location: {res.headers.get('Location')}")
         
         print("\nTesting /hi/split ...")
-        res = client.get('/hi/split')
+        res = client.get('/cy/html_to_pdf')
         print(f"Status: {res.status_code}, Location: {res.headers.get('Location')}")
         
         if res.status_code >= 400:
