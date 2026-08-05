@@ -180,6 +180,36 @@ SLUG_TO_FILE = {
     'disclaimer': 'disclaimer.html'
 }
 
+LEGACY_REDIRECTS = {
+    'merge': 'merge_pdf',
+    'split': 'split_pdf',
+    'compress': 'compress_pdf',
+    'word-to-pdf': 'word_to_pdf',
+    'pdf-to-word': 'pdf_to_word',
+    'jpg-to-pdf': 'jpg_to_pdf',
+    'pdf-to-jpg': 'pdf_to_jpg',
+    'rotate': 'rotate_pdf',
+    'protect': 'protect-pdf',
+    'unlock': 'unlock_pdf',
+    'watermark': 'pdf_add_watermark',
+    'page-numbers': 'add_pdf_page_number',
+    'organize': 'organize-pdf',
+    'delete-pages': 'remove-pages',
+    'compare': 'compare-pdf',
+    'html_to_pdf': 'html-to-pdf',
+    'extract_text': 'extract-text',
+    'remove_pages': 'remove-pages',
+    'compare_pdf': 'compare-pdf',
+    'powerpoint_to_pdf': 'powerpoint-to-pdf',
+    'pdf_to_powerpoint': 'pdf-to-powerpoint',
+    'excel_to_pdf': 'excel-to-pdf',
+    'pdf_to_excel': 'pdf-to-excel',
+    'repair_pdf': 'repair-pdf',
+    'ocr_pdf': 'ocr-pdf',
+    'translate_pdf': 'translate-pdf',
+    'sign_pdf': 'sign-pdf'
+}
+
 TRANSLATIONS = {'es': {'Every tool you need to work with PDFs in one place': 'Todas las herramientas PDF que necesitas en un solo lugar', 'Every tool you need to use PDFs, at your fingertips. All are 100% FREE and easy to use! Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.': 'Todas las herramientas PDF que necesitas al alcance de tu mano. ¡100% GRATIS y fáciles de usar! Une, divide, comprime, convierte, rota, desbloquea y añade marcas de agua a tus archivos PDF con solo unos pocos clics.', 'Merge PDF': 'Unir PDF', 'Split PDF': 'Dividir PDF', 'Compress PDF': 'Comprimir PDF', 'Word to PDF': 'Word a PDF', 'PDF to Word': 'PDF a Word', 'JPG to PDF': 'JPG a PDF', 'PDF to JPG': 'PDF a JPG', 'Rotate PDF': 'Rotar PDF', 'Protect PDF': 'Proteger PDF', 'Unlock PDF': 'Desbloquear PDF', 'Watermark': 'Marca de agua', 'Page Numbers': 'Números de página', 'Organize PDF': 'Organizar PDF', 'HTML to PDF': 'HTML a PDF', 'Extract Text': 'Extraer texto', 'Delete Pages': 'Eliminar páginas', 'PDF to PDF/A': 'PDF a PDF/A', 'Repair PDF': 'Reparar PDF', 'OCR PDF': 'OCR PDF', 'AI Summarizer': 'Resumidor de IA', 'Translate PDF': 'Traducir PDF', 'Sign PDF': 'Firmar PDF', 'Compare PDF': 'Comparar PDF', 'All PDF Tools': 'Todas las herramientas PDF', 'Convert PDF': 'Convertir PDF', 'Log in': 'Iniciar sesión', 'Sign up': 'Registrarse', 'Home': 'Inicio'}, 'fr': {'Every tool you need to work with PDFs in one place': 'Tous les outils PDF dont vous avez besoin au même endroit', 'Every tool you need to use PDFs, at your fingertips. All are 100% FREE and easy to use! Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.': 'Tous les outils PDF à portée de main. 100% GRATUITS et faciles à utiliser ! Fusionnez, divisez, compressez, convertissez, pivotez, déverrouillez et ajoutez un filigrane à vos PDFs en quelques clics.', 'Merge PDF': 'Fusionner PDF', 'Split PDF': 'Diviser PDF', 'Compress PDF': 'Compresser PDF', 'Word to PDF': 'Word en PDF', 'PDF to Word': 'PDF en Word', 'JPG to PDF': 'JPG en PDF', 'PDF to JPG': 'PDF en JPG', 'Rotate PDF': 'Pivoter PDF', 'Protect PDF': 'Protéger PDF', 'Unlock PDF': 'Déverrouiller PDF', 'Watermark': 'Filigrane', 'Page Numbers': 'Numérotation', 'Organize PDF': 'Organiser PDF', 'HTML to PDF': 'HTML en PDF', 'Extract Text': 'Extraire le texte', 'Delete Pages': 'Supprimer des pages', 'PDF to PDF/A': 'PDF en PDF/A', 'Repair PDF': 'Réparer PDF', 'OCR PDF': 'OCR PDF', 'AI Summarizer': 'Résumeur IA', 'Translate PDF': 'Traduire PDF', 'Sign PDF': 'Signer PDF', 'Compare PDF': 'Comparer PDF', 'All PDF Tools': 'Tous les outils PDF', 'Convert PDF': 'Convertir PDF', 'Log in': 'Connexion', 'Sign up': "S'inscrire", 'Home': 'Accueil'}, 'de': {'Every tool you need to work with PDFs in one place': 'Jedes PDF-Werkzeug, das Sie benötigen, an einem Ort', 'Every tool you need to use PDFs, at your fingertips. All are 100% FREE and easy to use! Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.': 'Alle PDF-Werkzeuge für Sie bereit. 100% KOSTENLOS und einfach zu bedienen! PDF-Dateien zusammenfügen, teilen, komprimieren, konvertieren, drehen, entsperren und Wasserzeichen hinzufügen.', 'Merge PDF': 'PDF zusammenfügen', 'Split PDF': 'PDF teilen', 'Compress PDF': 'PDF komprimieren', 'Word to PDF': 'Word in PDF', 'PDF to Word': 'PDF in Word', 'JPG to PDF': 'JPG in PDF', 'PDF to JPG': 'PDF in JPG', 'Rotate PDF': 'PDF drehen', 'Protect PDF': 'PDF schützen', 'Unlock PDF': 'PDF entsperren', 'Watermark': 'Wasserzeichen', 'Page Numbers': 'Seitenzahlen', 'Organize PDF': 'PDF organisieren', 'HTML to PDF': 'HTML in PDF', 'Extract Text': 'Text extrahieren', 'Delete Pages': 'Seiten löschen', 'PDF to PDF/A': 'PDF in PDF/A', 'Repair PDF': 'PDF reparieren', 'OCR PDF': 'OCR PDF', 'AI Summarizer': 'KI-Zusammenfassung', 'Translate PDF': 'PDF übersetzen', 'Sign PDF': 'PDF unterschreiben', 'Compare PDF': 'PDF vergleichen', 'All PDF Tools': 'Alle PDF-Werkzeuge', 'Convert PDF': 'PDF konvertieren', 'Log in': 'Einloggen', 'Sign up': 'Registrieren', 'Home': 'Startseite'}, 'pt': {'Every tool you need to work with PDFs in one place': 'Todas as ferramentas PDF necessárias em um só lugar', 'Every tool you need to use PDFs, at your fingertips. All are 100% FREE and easy to use! Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.': "Todas as ferramentas PDF ao seu alcance. 100% GRATUITAS e fáceis de usar! Mesclar, dividir, comprimir, converter, rotacionar, desbloquear e adicionar marcas d'água aos seus PDFs.", 'Merge PDF': 'Mesclar PDF', 'Split PDF': 'Dividir PDF', 'Compress PDF': 'Comprimir PDF', 'Word to PDF': 'Word para PDF', 'PDF to Word': 'PDF para Word', 'JPG to PDF': 'JPG para PDF', 'PDF to JPG': 'PDF para JPG', 'Rotate PDF': 'Rotacionar PDF', 'Protect PDF': 'Proteger PDF', 'Unlock PDF': 'Desbloquear PDF', 'Watermark': "Marca d'água", 'Page Numbers': 'Números de página', 'Organize PDF': 'Organizar PDF', 'HTML to PDF': 'HTML para PDF', 'Extract Text': 'Extrair texto', 'Delete Pages': 'Excluir páginas', 'PDF to PDF/A': 'PDF para PDF/A', 'Repair PDF': 'Reparar PDF', 'OCR PDF': 'OCR PDF', 'AI Summarizer': 'Resumidor de IA', 'Translate PDF': 'Traduzir PDF', 'Sign PDF': 'Assinar PDF', 'Compare PDF': 'Comparar PDF', 'All PDF Tools': 'Todas as ferramentas PDF', 'Convert PDF': 'Converter PDF', 'Log in': 'Entrar', 'Sign up': 'Cadastrar', 'Home': 'Início'}, 'hi': {'Every tool you need to work with PDFs in one place': 'पीडीएफ पर काम करने के लिए सभी आवश्यक उपकरण एक जगह', 'Every tool you need to use PDFs, at your fingertips. All are 100% FREE and easy to use! Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.': 'आपकी उंगलियों पर सभी पीडीएफ उपकरण। 100% मुफ़्त और उपयोग में आसान! कुछ ही क्लिक में पीडीएफ़ को मर्ज, स्प्लिट, कंप्रेस, कन्वर्ट, रोटेट, अनलॉक और वॉटरमार्क करें।', 'Merge PDF': 'पीडीएफ मर्ज करें', 'Split PDF': 'पीडीएफ विभाजित करें', 'Compress PDF': 'पीडीएफ कंप्रेस करें', 'Word to PDF': 'वर्ड से पीडीएफ', 'PDF to Word': 'पीडीएफ से वर्ड', 'JPG to PDF': 'जेपीजी से पीडीएफ', 'PDF to JPG': 'पीडीएफ से जेपीजी', 'Rotate PDF': 'पीडीएफ घुमाएँ', 'Protect PDF': 'पीडीएफ सुरक्षित करें', 'Unlock PDF': 'पीडीएफ अनलॉक करें', 'Watermark': 'वॉटरमार्क', 'Page Numbers': 'पेज नंबर', 'Organize PDF': 'पीडीएफ व्यवस्थित करें', 'HTML to PDF': 'एचटीएमएल से पीडीएफ', 'Extract Text': 'टेक्स्ट निकालें', 'Delete Pages': 'पेज हटाएं', 'PDF to PDF/A': 'पीडीएफ से पीडीएफ/ए', 'Repair PDF': 'पीडीएफ रिपेयर करें', 'OCR PDF': 'ओसीआर पीडीएफ', 'AI Summarizer': 'एआई सारांश', 'Translate PDF': 'अनुवाद करें', 'Sign PDF': 'हस्ताक्षर करें', 'Compare PDF': 'पीडीएफ तुलना करें', 'All PDF Tools': 'सभी पीडीएफ टूल्स', 'Convert PDF': 'कन्वर्ट पीडीएफ', 'Log in': 'लॉगिन', 'Sign up': 'साइन अप', 'Home': 'होम'}, 'ar': {'Every tool you need to work with PDFs in one place': 'جميع أدوات PDF التي تحتاجها في مكان واحد', 'Merge PDF': 'دمج PDF', 'Split PDF': 'تقسيم PDF', 'Compress PDF': 'ضغط PDF', 'Word to PDF': 'Word إلى PDF', 'PDF to Word': 'PDF إلى Word', 'JPG to PDF': 'JPG إلى PDF', 'PDF to JPG': 'PDF إلى JPG', 'Rotate PDF': 'تدوير PDF', 'Protect PDF': 'حماية PDF', 'Unlock PDF': 'فتح PDF', 'Watermark': 'علامة مائية', 'Page Numbers': 'أرقام الصفحات', 'Organize PDF': 'تنظيم PDF', 'HTML to PDF': 'HTML إلى PDF', 'Extract Text': 'استخراج النص', 'Delete Pages': 'حذف الصفحات', 'PDF to PDF/A': 'PDF إلى PDF/A', 'Repair PDF': 'إصلاح PDF', 'OCR PDF': 'التعرف الضوئي', 'AI Summarizer': 'ملخص الذكاء الاصطناعي', 'Translate PDF': 'ترجمة PDF', 'Sign PDF': 'توقيع PDF', 'Compare PDF': 'مقارنة PDF', 'All PDF Tools': 'جميع أدوات PDF', 'Convert PDF': 'تحويل PDF', 'Log in': 'تسجيل الدخول', 'Sign up': 'إنشاء حساب', 'Home': 'الرئيسية'}, 'zh': {'Every tool you need to work with PDFs in one place': '您在一个地方所需的所有 PDF 工具', 'Merge PDF': '合并 PDF', 'Split PDF': '拆分 PDF', 'Compress PDF': '压缩 PDF', 'Word to PDF': 'Word 转 PDF', 'PDF to Word': 'PDF 转 Word', 'JPG to PDF': 'JPG 转 PDF', 'PDF to JPG': 'PDF 转 JPG', 'Rotate PDF': '旋转 PDF', 'Protect PDF': '加密 PDF', 'Unlock PDF': '解密 PDF', 'Watermark': '添加水印', 'Page Numbers': '添加页码', 'Organize PDF': '组织 PDF', 'HTML to PDF': 'HTML 转 PDF', 'Extract Text': '提取文本', 'Delete Pages': '删除页面', 'PDF to PDF/A': 'PDF 转 PDF/A', 'Repair PDF': '修复 PDF', 'OCR PDF': 'OCR 识别', 'AI Summarizer': 'AI 摘要', 'Translate PDF': '翻译 PDF', 'Sign PDF': '电子签名', 'Compare PDF': '对比 PDF', 'All PDF Tools': '所有 PDF 工具', 'Convert PDF': '转换 PDF', 'Log in': '登录', 'Sign up': '注册', 'Home': '首页'}, 'ja': {'Every tool you need to work with PDFs in one place': 'PDFの作業に必要なすべてのツールを1箇所に', 'Merge PDF': 'PDF 結合', 'Split PDF': 'PDF 分割', 'Compress PDF': 'PDF 圧縮', 'Word to PDF': 'Word から PDF', 'PDF to Word': 'PDF から Word', 'JPG to PDF': 'JPG から PDF', 'PDF to JPG': 'PDF から JPG', 'Rotate PDF': 'PDF 回転', 'Protect PDF': 'PDF 保護', 'Unlock PDF': 'PDF ロック解除', 'Watermark': '透かし追加', 'Page Numbers': 'ページ番号', 'Organize PDF': 'PDF 整理', 'HTML to PDF': 'HTML から PDF', 'Extract Text': 'テキスト抽出', 'Delete Pages': 'ページ削除', 'PDF to PDF/A': 'PDF から PDF/A', 'Repair PDF': 'PDF 修復', 'OCR PDF': 'OCR 処理', 'AI Summarizer': 'AI 要約', 'Translate PDF': 'PDF 翻訳', 'Sign PDF': 'PDF 署名', 'Compare PDF': 'PDF 比較', 'All PDF Tools': 'すべての PDF ツール', 'Convert PDF': 'PDF 変換', 'Log in': 'ログイン', 'Sign up': '新規登録', 'Home': 'ホーム'}, 'ru': {'Every tool you need to work with PDFs in one place': 'Все инструменты PDF, необходимые для работы, в одном месте', 'Merge PDF': 'Объединить PDF', 'Split PDF': 'Разделить PDF', 'Compress PDF': 'Сжать PDF', 'Word to PDF': 'Word в PDF', 'PDF to Word': 'PDF в Word', 'JPG to PDF': 'JPG в PDF', 'PDF to JPG': 'PDF в JPG', 'Rotate PDF': 'Повернуть PDF', 'Protect PDF': 'Защитить PDF', 'Unlock PDF': 'Снять защиту PDF', 'Watermark': 'Водяной знак', 'Page Numbers': 'Номера страниц', 'Organize PDF': 'Упорядочить PDF', 'HTML to PDF': 'HTML в PDF', 'Extract Text': 'Извлечь текст', 'Delete Pages': 'Удалить страницы', 'PDF to PDF/A': 'PDF в PDF/A', 'Repair PDF': 'Восстановить PDF', 'OCR PDF': 'Распознавание OCR', 'AI Summarizer': 'ИИ Суммаризатор', 'Translate PDF': 'Перевести PDF', 'Sign PDF': 'Подписать PDF', 'Compare PDF': 'Сравнить PDF', 'All PDF Tools': 'Все инструменты PDF', 'Convert PDF': 'Конвертировать PDF', 'Log in': 'Войти', 'Sign up': 'Регистрация', 'Home': 'Главная'}}
 # Serve explicit static assets from root
 @app.route('/style.css')
@@ -252,7 +282,7 @@ def serve_disclaimer():
 def index_route(lang=None):
     if lang and is_valid_language_code(lang):
         return serve_tool_page('', lang)
-    if lang and lang in SLUG_TO_FILE:
+    if lang and (lang in SLUG_TO_FILE or lang in LEGACY_REDIRECTS):
         return serve_tool_page(lang, None)
     if lang:
         return dynamic_seo_page(lang)
@@ -260,46 +290,17 @@ def index_route(lang=None):
 
 @app.route('/<lang>/<slug>')
 def lang_tool_route(lang, slug):
-    if is_valid_language_code(lang) and slug in SLUG_TO_FILE:
+    if is_valid_language_code(lang) and (slug in SLUG_TO_FILE or slug in LEGACY_REDIRECTS):
         return serve_tool_page(slug, lang)
-    elif lang in SLUG_TO_FILE:
+    elif lang in SLUG_TO_FILE or lang in LEGACY_REDIRECTS:
         return serve_tool_page(lang, None)
     return dynamic_seo_page(f"{lang}/{slug}")
 
 def serve_tool_page(slug, lang=None):
     # Backward compatibility redirects
-    legacy_redirects = {
-        'merge': 'merge_pdf',
-        'split': 'split_pdf',
-        'compress': 'compress_pdf',
-        'word-to-pdf': 'word_to_pdf',
-        'pdf-to-word': 'pdf_to_word',
-        'jpg-to-pdf': 'jpg_to_pdf',
-        'pdf-to-jpg': 'pdf_to_jpg',
-        'rotate': 'rotate_pdf',
-        'protect': 'protect-pdf',
-        'unlock': 'unlock_pdf',
-        'watermark': 'pdf_add_watermark',
-        'page-numbers': 'add_pdf_page_number',
-        'organize': 'organize-pdf',
-        'delete-pages': 'remove-pages',
-        'compare': 'compare-pdf',
-        'html_to_pdf': 'html-to-pdf',
-        'extract_text': 'extract-text',
-        'remove_pages': 'remove-pages',
-        'compare_pdf': 'compare-pdf',
-        'powerpoint_to_pdf': 'powerpoint-to-pdf',
-        'pdf_to_powerpoint': 'pdf-to-powerpoint',
-        'excel_to_pdf': 'excel-to-pdf',
-        'pdf_to_excel': 'pdf-to-excel',
-        'repair_pdf': 'repair-pdf',
-        'ocr_pdf': 'ocr-pdf',
-        'translate_pdf': 'translate-pdf',
-        'sign_pdf': 'sign-pdf'
-    }
-    if slug in legacy_redirects:
+    if slug in LEGACY_REDIRECTS:
         try:
-            target = legacy_redirects[slug]
+            target = LEGACY_REDIRECTS[slug]
             url = f"/{lang}/{target}" if lang else f"/{target}"
             return redirect(url, code=301)
         except Exception as e:
@@ -1463,6 +1464,10 @@ def serve_ad_snippets(filename):
 def dynamic_seo_page(slug):
     slug = slug.strip('/')
     
+    # If the slug is actually a tool slug (like a legacy typo) that wasn't matched by specific routes
+    if slug in SLUG_TO_FILE or slug in LEGACY_REDIRECTS:
+        return serve_tool_page(slug)
+        
     # Handle dynamic real working language/locale routes
     if is_valid_language_code(slug):
         index_path = os.path.join(BASE_DIR, 'index.html')
