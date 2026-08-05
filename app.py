@@ -28,6 +28,7 @@ from pdf_tools import *
 
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 # Setup directories inside workspace
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
