@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="google-adsense-account" content="ca-pub-0000000000000000">
@@ -541,7 +541,7 @@
         const dropzone = document.getElementById('file-dropzone');
         const fileSelector = document.getElementById('file-selector');
 
-        dropzone.addEventListener('click', () => fileSelector.click());
+        dropzone.addEventListener('click', (e) => { if (e.target !== fileSelector) fileSelector.click(); });
         fileSelector.addEventListener('change', (e) => addSelectedFiles(e.target.files));
 
         ['dragenter', 'dragover'].forEach(eventName => {
@@ -709,7 +709,7 @@
 
                     const rotateBtn = document.createElement('button');
                     rotateBtn.className = 'action-btn-small';
-                    rotateBtn.title = 'Rotate 90°';
+                    rotateBtn.title = 'Rotate 90Â°';
                     rotateBtn.type = 'button';
                     rotateBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15.55 5.55L11 10h3v6c0 1.1-.9 2-2 2H6v2h6c2.2 0 4-1.8 4-4v-6h3l-4.45-4.45z"/></svg>`;
                     rotateBtn.onclick = (e) => {
@@ -888,3 +888,4 @@
 
 </body>
 </html>
+

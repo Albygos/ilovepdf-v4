@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- SEO tags start -->
@@ -316,15 +316,15 @@
                         <div class="form-group">
                             <label class="form-label" for="param-target-lang">Translate To</label>
                             <select class="form-input form-select" id="param-target-lang">
-                                <option value="es">Spanish (Español)</option>
-                                <option value="fr">French (Français)</option>
+                                <option value="es">Spanish (EspaÃ±ol)</option>
+                                <option value="fr">French (FranÃ§ais)</option>
                                 <option value="de">Deutsch (German)</option>
-                                <option value="pt">Portuguese (Português)</option>
-                                <option value="hi">Hindi (हिन्दी)</option>
+                                <option value="pt">Portuguese (PortuguÃªs)</option>
+                                <option value="hi">Hindi (à¤¹à¤¿à¤¨à¥à¤¦à¥€)</option>
                                 <option value="it">Italian (Italiano)</option>
-                                <option value="ja">Japanese (日本語)</option>
-                                <option value="zh">Chinese (中文)</option>
-                                <option value="ar">Arabic (العربية)</option>
+                                <option value="ja">Japanese (æ—¥æœ¬èªž)</option>
+                                <option value="zh">Chinese (ä¸­æ–‡)</option>
+                                <option value="ar">Arabic (Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©)</option>
                             </select>
                         </div>
                     </div>
@@ -549,7 +549,7 @@
         const dropzone = document.getElementById('file-dropzone');
         const fileSelector = document.getElementById('file-selector');
 
-        dropzone.addEventListener('click', () => fileSelector.click());
+        dropzone.addEventListener('click', (e) => { if (e.target !== fileSelector) fileSelector.click(); });
         fileSelector.addEventListener('change', (e) => addSelectedFiles(e.target.files));
 
         ['dragenter', 'dragover'].forEach(eventName => {
@@ -734,3 +734,4 @@
 
 </body>
 </html>
+

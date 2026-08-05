@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Google Search Brand Name & Favicon Signals -->
@@ -557,7 +557,7 @@
         const dropzone = document.getElementById('file-dropzone');
         const fileSelector = document.getElementById('file-selector');
 
-        dropzone.addEventListener('click', () => fileSelector.click());
+        dropzone.addEventListener('click', (e) => { if (e.target !== fileSelector) fileSelector.click(); });
         fileSelector.addEventListener('change', (e) => addSelectedFiles(e.target.files));
 
         ['dragenter', 'dragover'].forEach(eventName => {
@@ -737,3 +737,4 @@
 
 </body>
 </html>
+
