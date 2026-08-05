@@ -1655,7 +1655,7 @@ def apply_language_translations(html, lang):
     if 'title' in t_dict:
         html = re.sub(r'<title>.*?</title>', f'<title>{t_dict["title"]}</title>', html, flags=re.DOTALL)
     if 'desc' in t_dict:
-        html = re.sub(r'''<meta\s+name=["']description["']\s+content=["'][^"']*["']''', f'<meta name="description" content="{t_dict["desc"]}">', html, flags=re.IGNORECASE)
+        html = re.sub(r'''<meta\s+name=["']description["']\s+content=["'][^"']*["']''', f'<meta name="description" content="{t_dict["desc"]}"', html, flags=re.IGNORECASE)
         
     # Replace Hero H1 & Subtitle
     if 'h1' in t_dict:
