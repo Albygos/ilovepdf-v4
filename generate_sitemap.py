@@ -38,30 +38,33 @@ with open('sitemap_debug.log', 'w') as log:
                 seo_articles.append(f.replace('.html', ''))
 
         core_urls = []
+        language_urls = []
         article_urls = []
 
-        # 1. Homepage & Tools & Static Pages
+        # 1. Homepage
         core_urls.append((f"{DOMAIN}/", '1.0', 'daily'))
         for lang in LANGUAGES:
-            core_urls.append((f"{DOMAIN}/{lang}/", '1.0', 'daily'))
+            language_urls.append((f"{DOMAIN}/{lang}/", '1.0', 'daily'))
             if lang in indian_langs_set:
-                core_urls.append((f"{DOMAIN}/{lang}-in/", '1.0', 'daily'))
+                language_urls.append((f"{DOMAIN}/{lang}-in/", '1.0', 'daily'))
 
+        # 2. Tools
         for tool in TOOLS:
             core_urls.append((f"{DOMAIN}/{tool}", '0.9', 'weekly'))
             for lang in LANGUAGES:
-                core_urls.append((f"{DOMAIN}/{lang}/{tool}", '0.9', 'weekly'))
+                language_urls.append((f"{DOMAIN}/{lang}/{tool}", '0.9', 'weekly'))
                 if lang in indian_langs_set:
-                    core_urls.append((f"{DOMAIN}/{lang}-in/{tool}", '0.9', 'weekly'))
+                    language_urls.append((f"{DOMAIN}/{lang}-in/{tool}", '0.9', 'weekly'))
 
+        # 3. Static Pages
         for page in STATIC_PAGES:
             core_urls.append((f"{DOMAIN}/{page}", '0.5', 'monthly'))
             for lang in LANGUAGES:
-                core_urls.append((f"{DOMAIN}/{lang}/{page}", '0.5', 'monthly'))
+                language_urls.append((f"{DOMAIN}/{lang}/{page}", '0.5', 'monthly'))
                 if lang in indian_langs_set:
-                    core_urls.append((f"{DOMAIN}/{lang}-in/{page}", '0.5', 'monthly'))
+                    language_urls.append((f"{DOMAIN}/{lang}-in/{page}", '0.5', 'monthly'))
 
-        # 2. SEO Articles (ONLY english, no translations)
+        # 4. SEO Articles (ONLY english, no translations)
         for article in seo_articles:
             article_urls.append((f"{DOMAIN}/{article}", '0.8', 'weekly'))
 
@@ -82,11 +85,12 @@ with open('sitemap_debug.log', 'w') as log:
 
         # Write the individual sitemaps
         write_sitemap('sitemap-core.xml', core_urls)
+        write_sitemap('sitemap-languages.xml', language_urls)
         write_sitemap('sitemap-articles.xml', article_urls)
 
         # Generate Sitemap Index
         index_lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-        for sitemap_name in ['sitemap-core.xml', 'sitemap-articles.xml']:
+        for sitemap_name in ['sitemap-core.xml', 'sitemap-languages.xml', 'sitemap-articles.xml']:
             index_lines.append('  <sitemap>')
             index_lines.append(f'    <loc>{DOMAIN}/{sitemap_name}</loc>')
             index_lines.append(f'    <lastmod>{today}</lastmod>')
