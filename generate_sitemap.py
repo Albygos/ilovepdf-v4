@@ -32,10 +32,12 @@ with open('sitemap_debug.log', 'w') as log:
         ])
 
         seo_articles = []
-        files = os.listdir('.')
-        for f in files:
-            if f.endswith('.html') and f not in exclude_htmls:
-                seo_articles.append(f.replace('.html', ''))
+        if os.path.exists('seo_keywords.txt'):
+            with open('seo_keywords.txt', 'r', encoding='utf-16') as f:
+                for line in f:
+                    slug = line.strip()
+                    if slug:
+                        seo_articles.append(slug)
 
         core_urls = []
         language_urls = []
@@ -64,9 +66,9 @@ with open('sitemap_debug.log', 'w') as log:
                 if lang in indian_langs_set:
                     language_urls.append((f"{DOMAIN}/{lang}-in/{page}", '0.5', 'monthly'))
 
-        # 4. SEO Articles (ONLY english, no translations)
+        # 4. SEO Articles (All keywords now reside under the /en/ language prefix)
         for article in seo_articles:
-            article_urls.append((f"{DOMAIN}/{article}", '0.8', 'weekly'))
+            article_urls.append((f"{DOMAIN}/en/{article}", '0.8', 'weekly'))
 
         today = datetime.now().strftime('%Y-%m-%d')
 

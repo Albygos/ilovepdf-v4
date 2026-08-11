@@ -32,6 +32,17 @@ app.url_map.strict_slashes = False
 
 # Setup directories inside workspace
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+SEO_KEYWORDS = set()
+try:
+    with open(os.path.join(BASE_DIR, 'seo_keywords.txt'), 'r', encoding='utf-16') as f:
+        for line in f:
+            line_slug = line.strip()
+            if line_slug:
+                SEO_KEYWORDS.add(line_slug)
+except Exception as e:
+    print(f"Warning: Could not load seo_keywords.txt: {e}")
+
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 PROCESSED_FOLDER = os.path.join(BASE_DIR, 'processed')
 
@@ -1478,6 +1489,97 @@ def dynamic_seo_page(slug):
             html = f.read()
         return apply_language_translations(html, slug)
         
+    # Parse language from slug (e.g. "es/100-free-add-logo-to-pdf")
+    lang = None
+    parts = slug.split('/')
+    if len(parts) == 2 and is_valid_language_code(parts[0]):
+        lang = parts[0]
+        keyword = parts[1]
+    else:
+        keyword = slug
+        
+    # Handle SEO keyword pages dynamically (e.g. from seo_keywords.txt)
+    if keyword in SEO_KEYWORDS or keyword.startswith('100-free-') or keyword.endswith('-for-mac') or keyword.endswith('-for-windows'):
+        title, desc = get_seo_metadata(keyword)
+        
+        # User requested to serve index.html (the language page layout) for all keywords
+        filepath = os.path.join(BASE_DIR, 'index.html')
+        if not os.path.exists(filepath):
+            abort(404)
+            
+        with open(filepath, 'r', encoding='utf-8') as f:
+            html = f.read()
+            
+        # Inject dynamic SEO tags
+        import re
+        root_domain = "https://ilovespdfs.in"
+        lang_sub = f"{lang}/" if lang and lang != 'en' else "en/"
+        canonical_url = f"{root_domain}/{lang_sub}{keyword}"
+        
+        html = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', html, flags=re.IGNORECASE)
+        html = re.sub(r'<meta name="description" content=".*?">', f'<meta name="description" content="{desc}">', html, flags=re.IGNORECASE)
+        html = re.sub(r'<link\s+rel=["\']canonical["\'].*?>', '', html, flags=re.IGNORECASE)
+        
+        # Build hreflangs for keyword pages
+        hreflangs = []
+        hreflangs.append(f'<link rel="canonical" href="{canonical_url}" />')
+        hreflangs.append(f'<link rel="alternate" hreflang="x-default" href="{root_domain}/en/{keyword}" />')
+        hreflangs.append(f'<link rel="alternate" hreflang="en" href="{root_domain}/en/{keyword}" />')
+        indian_langs_set = {'hi', 'bn', 'ta', 'te', 'mr', 'gu', 'kn', 'ur', 'pa', 'ml', 'or'}
+        for l in SUPPORTED_LANGS:
+            if l != 'en':
+                hreflangs.append(f'<link rel="alternate" hreflang="{l}" href="{root_domain}/{l}/{keyword}" />')
+                if l in indian_langs_set:
+                    hreflangs.append(f'<link rel="alternate" hreflang="{l}-in" href="{root_domain}/{l}/{keyword}" />')
+        
+        injection = "\n    ".join(hreflangs)
+        html = re.sub(r'(<head\b[^>]*>)', r'\1\n    ' + injection, html, flags=re.IGNORECASE)
+        
+        # Inject the keyword into the page's visible H1 header and H2 subtitle for better indexing
+        clean_title_h1 = keyword.replace('-', ' ').title().replace('100 Free', '100% Free')
+        
+        # Replace the homepage H1 and H2 tags dynamically
+        html = re.sub(
+            r'<h1 class="f-heading1[^>]*>.*?</h1>', 
+            f'<h1 class="f-heading1everytoolyouneedtoworkwithpdfsinoneplace-1006461">{clean_title_h1}</h1>', 
+            html, 
+            flags=re.IGNORECASE | re.DOTALL
+        )
+        html = re.sub(
+            r'<h2 class="f-heading2[^>]*>.*?</h2>', 
+            f'<h2 class="f-heading2everytoolyouneedtousepdfsatyourfingertipsallare100freeandeasytousemergesplitcompressconvertrotateunlockandwatermarkpdfswithjustafewclicks-1006462">{desc}</h2>', 
+            html, 
+            flags=re.IGNORECASE | re.DOTALL
+        )
+        
+        # Inject Advanced JSON-LD for SoftwareApplication (if exists)
+        schema = f'''
+    <script type="application/ld+json">
+    {{
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "{title}",
+        "description": "{desc}",
+        "url": "{canonical_url}",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "All",
+        "offers": {{
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }}
+    }}
+    </script>
+'''
+        html = re.sub(r'(</head>)', schema + r'\n\1', html, flags=re.IGNORECASE)
+        
+        # Translate the UI buttons/menus to the requested language
+        if lang and lang != 'en':
+            html = apply_language_translations(html, lang)
+            
+        return html
+
+        
     # Allow serving static files or explicit HTML from root
     root_file = os.path.join(BASE_DIR, slug)
     if os.path.exists(root_file) and os.path.isfile(root_file):
@@ -1489,6 +1591,49 @@ def dynamic_seo_page(slug):
             return send_from_directory(BASE_DIR, slug + '.html')
     
     abort(404)
+
+def get_base_tool_for_seo_keyword(slug):
+    slug_lower = slug.lower()
+    
+    mapping_rules = {
+        'watermark.html': ['watermark', 'add-logo'],
+        'page-numbers.html': ['page-number', 'paginate'],
+        'delete-pages.html': ['delete-page', 'remove-page'],
+        'rotate.html': ['rotate'],
+        'protect.html': ['protect', 'encrypt', 'add-password'],
+        'unlock.html': ['unlock', 'decrypt', 'remove-password', 'remove-security'],
+        'pdf-to-pdfa.html': ['pdfa', 'archive'],
+        'pdf-summarize.html': ['summarize', 'summary', 'ai-pdf'],
+        'translate-pdf.html': ['translate', 'translator'],
+        'sign-pdf.html': ['sign', 'signature'],
+        'compare.html': ['compare'],
+        'ocr-pdf.html': ['ocr', 'text-recognition'],
+        'extract-text.html': ['extract-text', 'text-extractor'],
+        'repair-pdf.html': ['repair', 'fix', 'recover'],
+        'word-to-pdf.html': ['word-to-pdf', 'doc-to-pdf', 'docx-to-pdf'],
+        'pdf-to-word.html': ['pdf-to-word', 'pdf-to-doc', 'pdf-to-docx'],
+        'powerpoint-to-pdf.html': ['powerpoint-to-pdf', 'ppt-to-pdf'],
+        'pdf-to-powerpoint.html': ['pdf-to-powerpoint', 'pdf-to-ppt'],
+        'excel-to-pdf.html': ['excel-to-pdf', 'xls-to-pdf'],
+        'pdf-to-excel.html': ['pdf-to-excel', 'pdf-to-xls'],
+        'jpg-to-pdf.html': ['jpg-to-pdf', 'jpeg-to-pdf', 'image-to-pdf', 'png-to-pdf'],
+        'pdf-to-jpg.html': ['pdf-to-jpg', 'pdf-to-jpeg', 'pdf-to-image', 'pdf-to-png'],
+        'html-to-pdf.html': ['html-to-pdf', 'web-to-pdf'],
+        'merge.html': ['merge', 'combine', 'join', 'bind'],
+        'split.html': ['split', 'separate', 'divide']
+    }
+    
+    for tool_html, keywords in mapping_rules.items():
+        if any(kw in slug_lower for kw in keywords):
+            return tool_html
+            
+    return 'index.html'
+
+def get_seo_metadata(slug):
+    clean_title = slug.replace('-', ' ').title().replace('100 Free', '100% Free')
+    title = f"{clean_title} | Premium PDF processing"
+    desc = f"Looking for {clean_title}? Use our Premium, free online tool to process your documents instantly. No registration required."
+    return title, desc
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
