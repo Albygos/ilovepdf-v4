@@ -1231,6 +1231,10 @@ def serve_sitemap(suffix=None):
     filename = f'sitemap-{suffix}.xml' if suffix else 'sitemap.xml'
     return send_from_directory(BASE_DIR, filename, mimetype='application/xml')
 
+@app.route('/sitemaps/<path:filename>')
+def serve_sitemaps_folder(filename):
+    return send_from_directory(os.path.join(BASE_DIR, 'sitemaps'), filename, mimetype='application/xml')
+
 
 @app.after_request
 def add_header(response):
