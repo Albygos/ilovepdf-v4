@@ -66,9 +66,24 @@ with open('sitemap_debug.log', 'w') as log:
                 if lang in indian_langs_set:
                     language_urls.append((f"{DOMAIN}/{lang}-in/{page}", '0.5', 'monthly'))
 
-        # 4. SEO Articles (All keywords now reside under the /en/ language prefix)
+        # 4. SEO Articles (Generate separate lists for each language because of 50k limit per sitemap)
+        # We will dynamically generate the sitemap names and URL lists
+        article_sitemaps = {}
+        for lang in ['en'] + LANGUAGES:
+            article_sitemaps[lang] = []
+            
+        for lang_in in indian_langs_set:
+            article_sitemaps[f"{lang_in}-in"] = []
+            
         for article in seo_articles:
-            article_urls.append((f"{DOMAIN}/en/{article}", '0.8', 'weekly'))
+            # English goes to /en/
+            article_sitemaps['en'].append((f"{DOMAIN}/en/{article}", '0.8', 'weekly'))
+            
+            # Other languages
+            for lang in LANGUAGES:
+                article_sitemaps[lang].append((f"{DOMAIN}/{lang}/{article}", '0.8', 'weekly'))
+                if lang in indian_langs_set:
+                    article_sitemaps[f"{lang}-in"].append((f"{DOMAIN}/{lang}-in/{article}", '0.8', 'weekly'))
 
         today = datetime.now().strftime('%Y-%m-%d')
 
@@ -88,11 +103,26 @@ with open('sitemap_debug.log', 'w') as log:
         # Write the individual sitemaps
         write_sitemap('sitemap-core.xml', core_urls)
         write_sitemap('sitemap-languages.xml', language_urls)
-        write_sitemap('sitemap-articles.xml', article_urls)
+        
+        sitemap_files_to_index = ['sitemap-core.xml', 'sitemap-languages.xml']
+        
+        # Create a sitemaps directory to avoid cluttering the root folder
+        sitemaps_dir = 'sitemaps'
+        if not os.path.exists(sitemaps_dir):
+            os.makedirs(sitemaps_dir)
+        
+        # Write article sitemaps per language into the subfolder
+        for lang_key, urls in article_sitemaps.items():
+            if urls:
+                # E.g. "sitemaps/sitemap-articles-en.xml"
+                filename = f'{sitemaps_dir}/sitemap-articles-{lang_key}.xml'
+                write_sitemap(filename, urls)
+                # Google index needs the full path including the folder name
+                sitemap_files_to_index.append(filename)
 
         # Generate Sitemap Index
         index_lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-        for sitemap_name in ['sitemap-core.xml', 'sitemap-languages.xml', 'sitemap-articles.xml']:
+        for sitemap_name in sitemap_files_to_index:
             index_lines.append('  <sitemap>')
             index_lines.append(f'    <loc>{DOMAIN}/{sitemap_name}</loc>')
             index_lines.append(f'    <lastmod>{today}</lastmod>')
