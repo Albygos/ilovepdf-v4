@@ -1538,19 +1538,22 @@ def dynamic_seo_page(slug):
         # Inject the keyword into the page's visible H1 header and H2 subtitle for better indexing
         clean_title_h1 = keyword.replace('-', ' ').title().replace('100 Free', '100% Free')
         
-        # Replace the homepage H1 and H2 tags dynamically
+        # Replace the homepage H1 and P tags dynamically
         html = re.sub(
-            r'<h1 class="f-heading1[^>]*>.*?</h1>', 
-            f'<h1 class="f-heading1everytoolyouneedtoworkwithpdfsinoneplace-1006461">{clean_title_h1}</h1>', 
+            r'<h1 class="hero-title[^>]*>.*?</h1>', 
+            f'<h1 class="hero-title">{clean_title_h1}</h1>', 
             html, 
             flags=re.IGNORECASE | re.DOTALL
         )
         html = re.sub(
-            r'<h2 class="f-heading2[^>]*>.*?</h2>', 
-            f'<h2 class="f-heading2everytoolyouneedtousepdfsatyourfingertipsallare100freeandeasytousemergesplitcompressconvertrotateunlockandwatermarkpdfswithjustafewclicks-1006462">{desc}</h2>', 
+            r'<p class="hero-subtitle[^>]*>.*?</p>', 
+            f'<p class="hero-subtitle">{desc}</p>', 
             html, 
             flags=re.IGNORECASE | re.DOTALL
         )
+        
+        # Fix CSS paths for nested routes (resolves the broken layout shown in the screenshot)
+        html = html.replace('href="./style.css', 'href="/style.css')
         
         # Inject Advanced JSON-LD for SoftwareApplication (if exists)
         schema = f'''
